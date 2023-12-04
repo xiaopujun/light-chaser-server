@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/light_chaser_server?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456
+
+
+#mybatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml #配置映射mapper的地址
+  type-aliases-package: com.ctbu.lc.entity   #配置mybatis的别名
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
