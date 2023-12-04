@@ -1,4 +1,4 @@
-package com.ctbu.lc.controller;
+package com.dagu.lightchaser.controller;
 
 import org.springframework.web.bind.annotation.*;
 

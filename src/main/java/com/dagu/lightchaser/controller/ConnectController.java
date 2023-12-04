@@ -1,6 +1,6 @@
-package com.ctbu.lc.controller;
+package com.dagu.lightchaser.controller;
 
-import com.ctbu.lc.service.ConnectService;
+import com.dagu.lightchaser.service.ConnectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

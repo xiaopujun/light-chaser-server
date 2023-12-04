@@ -1,4 +1,4 @@
-package com.ctbu.lc.service;
+package com.dagu.lightchaser.service;
 
 public interface ConnectService {
 

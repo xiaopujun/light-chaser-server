@@ -1,6 +1,6 @@
-package com.ctbu.lc.service.impl;
+package com.dagu.lightchaser.service.impl;
 
-import com.ctbu.lc.service.ConnectService;
+import com.dagu.lightchaser.service.ConnectService;
 import org.springframework.stereotype.Service;
 
 import java.sql.DriverManager;

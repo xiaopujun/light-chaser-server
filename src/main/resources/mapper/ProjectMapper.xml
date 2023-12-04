@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dagu.lightchaser.dao.ProjectDao">
+
+    <insert id="addProject">
+        insert into project (id, name, des, create_time, update_time, status, save_type, del, data_json)
+        values (#{id}, #{name}, #{des}, #{create_time}, #{update_time}, #{status}, #{save_type}, #{del}, #{dataJson})
+    </insert>
+
+    <update id="updateProject">
+        update project
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="des != null">des = #{des},</if>
+            <if test="update_time != null">update_time = #{update_time},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="save_type != null">save_type = #{save_type},</if>
+            <if test="del != null">del = #{del},</if>
+            <if test="dataJson != null">data_json = #{dataJson}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getProjectList" resultType="com.dagu.lightchaser.entity.ProjectEntity">
+        select id,
+               name,
+               des,
+               create_time,
+               update_time,
+               status,
+               save_type
+        from project
+        where del = 0;
+    </select>
+    <select id="getProject" resultType="com.dagu.lightchaser.entity.ProjectEntity">
+        select id,
+               name,
+               des,
+               update_time,
+               status,
+               save_type,
+               data_json
+        from project
+        where id = #{id}
+          and del = 0;
+    </select>
+</mapper>

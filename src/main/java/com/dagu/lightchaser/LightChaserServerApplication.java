@@ -1,4 +1,4 @@
-package com.ctbu.lc;
+package com.dagu.lightchaser;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
