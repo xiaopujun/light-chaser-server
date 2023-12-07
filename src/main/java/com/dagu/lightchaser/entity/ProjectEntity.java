@@ -1,16 +1,18 @@
 package com.dagu.lightchaser.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@Getter
-@Setter
+@TableName("project")
 public class ProjectEntity implements Serializable {
+    @TableId(type = IdType.AUTO)
     private Long id;
     private String name;
     private String des;
@@ -18,6 +20,10 @@ public class ProjectEntity implements Serializable {
     private LocalDateTime updateTime;
     private int status;
     private int saveType;
-    private int del;
+    @TableLogic
+    private int deleted;
     private String dataJson;
+    private String prevUrl;
+
+
 }

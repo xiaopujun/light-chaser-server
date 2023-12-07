@@ -5,9 +5,17 @@ import com.dagu.lightchaser.entity.ProjectEntity;
 import java.util.List;
 
 public interface ProjectService {
-    Long createOrUpdateProject(ProjectEntity project);
+    Boolean updateProject(ProjectEntity project);
 
     List<ProjectEntity> getProjectList();
 
-    ProjectEntity getProject(Long id);
+    String getProjectData(Long id);
+
+    Long createProject(ProjectEntity project);
+
+    Boolean deleteProject(Long id);
+
+    Long copyProject(Long id);
+
+    ProjectEntity getProjectInfo(Long id);
 }

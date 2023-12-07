@@ -6,9 +6,14 @@ spring:
     password: 123456
 
 
-#mybatis配置
-mybatis:
-  mapper-locations: classpath:mapper/*.xml #配置映射mapper的地址
-  type-aliases-package: com.ctbu.lc.entity   #配置mybatis的别名
+# mybatis-plus配置
+mybatis-plus:
+  type-aliases-package: com.dagu.lightchaser.entity
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
   configuration:
+    map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

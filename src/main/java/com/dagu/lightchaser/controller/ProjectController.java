@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
-@RequestMapping("/project")
+@RequestMapping("/api/project")
 public class ProjectController {
     @Resource
     private ProjectService projectService;
@@ -18,13 +18,33 @@ public class ProjectController {
         return projectService.getProjectList();
     }
 
-    @GetMapping("/get")
-    public ProjectEntity getProject(@RequestParam(name = "id") Long id) {
-        return projectService.getProject(id);
+    @GetMapping("/getProjectData/{id}")
+    public String getProjectData(@PathVariable(name = "id") Long id) {
+        return projectService.getProjectData(id);
     }
 
-    @PostMapping("/createOrUpdate")
-    public Long createOrUpdateProject(@RequestBody(required = true) ProjectEntity project) {
-        return projectService.createOrUpdateProject(project);
+    @GetMapping("/getProjectInfo/{id}")
+    public ProjectEntity getProjectInfo(@PathVariable(name = "id") Long id) {
+        return projectService.getProjectInfo(id);
+    }
+
+    @PostMapping("/update")
+    public Boolean updateProject(@RequestBody(required = true) ProjectEntity project) {
+        return projectService.updateProject(project);
+    }
+
+    @PostMapping("/create")
+    public Long createProject(@RequestBody(required = true) ProjectEntity project) {
+        return projectService.createProject(project);
+    }
+
+    @GetMapping("/del/{id}")
+    public Boolean deleteProject(@PathVariable(name = "id") Long id) {
+        return projectService.deleteProject(id);
+    }
+
+    @GetMapping("/copy/{id}")
+    public Long copyProject(@PathVariable(name = "id") Long id) {
+        return projectService.copyProject(id);
     }
 }
