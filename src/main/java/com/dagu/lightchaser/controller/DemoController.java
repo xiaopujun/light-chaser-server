@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/lc/test/")
+@RequestMapping("/api/test/")
 public class DemoController {
 
     @PostMapping("/testNoType")
