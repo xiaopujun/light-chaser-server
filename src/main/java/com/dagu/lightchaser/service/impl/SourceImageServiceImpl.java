@@ -2,11 +2,11 @@ package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.dagu.lightchaser.dao.ImageDao;
-import com.dagu.lightchaser.entity.ImageEntity;
+import com.dagu.lightchaser.dao.SourceImageDao;
+import com.dagu.lightchaser.entity.SourceImageEntity;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalVariables;
-import com.dagu.lightchaser.service.FileService;
+import com.dagu.lightchaser.service.SourceImageService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,25 +20,25 @@ import java.util.UUID;
 
 
 @Service
-public class FileServiceImpl implements FileService {
+public class SourceImageServiceImpl implements SourceImageService {
 
     @Resource
-    private ImageDao imageDao;
+    private SourceImageDao sourceImageDao;
 
     @Override
-    public String uploadImage(ImageEntity imageEntity) {
+    public String uploadImage(SourceImageEntity sourceImageEntity) {
         //校验基础参数
-        if (imageEntity == null || imageEntity.getProjectId() == null || imageEntity.getFile() == null)
+        if (sourceImageEntity == null || sourceImageEntity.getProjectId() == null || sourceImageEntity.getFile() == null)
             throw new AppException(500, "图片文件参数错误");
         //校验文件格式、大小
-        MultipartFile file = imageEntity.getFile();
+        MultipartFile file = sourceImageEntity.getFile();
         if (file.getSize() > GlobalVariables.IMAGE_SIZE)
             throw new AppException(500, "图片大小不能超过5M");
         String fileName = file.getOriginalFilename();
         if (fileName == null)
             throw new AppException(500, "图片名称错误");
         //设置文件原始名称
-        imageEntity.setName(fileName);
+        sourceImageEntity.setName(fileName);
         String suffix = fileName.substring(fileName.lastIndexOf("."));
         if (!Arrays.asList(GlobalVariables.IMAGE_TYPE).contains(suffix))
             throw new AppException(500, "图片格式不支持");
@@ -50,11 +50,11 @@ public class FileServiceImpl implements FileService {
         } catch (IOException e) {
             throw new AppException(500, "图片hash校验失败");
         }
-        LambdaQueryWrapper<ImageEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ImageEntity::getProjectId, imageEntity.getProjectId())
-                .eq(ImageEntity::getHash, hash)
-                .eq(ImageEntity::getDeleted, 0);
-        ImageEntity record = imageDao.selectOne(queryWrapper);
+        LambdaQueryWrapper<SourceImageEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SourceImageEntity::getProjectId, sourceImageEntity.getProjectId())
+                .eq(SourceImageEntity::getHash, hash)
+                .eq(SourceImageEntity::getDeleted, 0);
+        SourceImageEntity record = sourceImageDao.selectOne(queryWrapper);
         //如果已经存在相同hash值的图片文件，则直接返回已存在的图片地址
         if (record != null)
             return GlobalVariables.IMAGE_PATH + record.getUrl();
@@ -75,24 +75,30 @@ public class FileServiceImpl implements FileService {
             throw new AppException(500, "图片写入文件系统失败");
         }
         //数据入库
-        imageEntity.setUrl(fileName);
-        imageEntity.setHash(hash);
-        imageDao.insert(imageEntity);
+        sourceImageEntity.setUrl(fileName);
+        sourceImageEntity.setHash(hash);
+        sourceImageDao.insert(sourceImageEntity);
         //返回文件路径
-        return GlobalVariables.IMAGE_PATH + imageEntity.getUrl();
+        return GlobalVariables.IMAGE_PATH + sourceImageEntity.getUrl();
     }
 
     @Override
-    public List<ImageEntity> getImageSourceList(String projectId) {
-        if (projectId == null || projectId.equals(""))
+    public List<SourceImageEntity> getSourceImageList(Long projectId) {
+        if (projectId == null || projectId <= 0)
             throw new AppException(500, "项目id错误");
-        QueryWrapper<ImageEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(ImageEntity::getProjectId, projectId).eq(ImageEntity::getDeleted, 0);
-        List<ImageEntity> images = imageDao.selectList(queryWrapper);
-        images.forEach((image) -> {
-            image.setUrl(GlobalVariables.IMAGE_PATH + image.getUrl());
-        });
+        QueryWrapper<SourceImageEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SourceImageEntity::getProjectId, projectId).eq(SourceImageEntity::getDeleted, 0);
+        List<SourceImageEntity> images = sourceImageDao.selectList(queryWrapper);
+        images.forEach((image) -> image.setUrl(GlobalVariables.IMAGE_PATH + image.getUrl()));
         return images;
+    }
+
+    @Override
+    public Boolean delImageSource(Long imageId) {
+        if (imageId == null || imageId <= 0)
+            throw new AppException(500, "图片id错误");
+        int row = sourceImageDao.deleteById(imageId);
+        return row > 0;
     }
 
 }
