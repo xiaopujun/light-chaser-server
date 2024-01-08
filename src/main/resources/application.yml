@@ -20,5 +20,6 @@ mybatis-plus:
 
 
 light-chaser:
-  image:
-    path: /static/image/
+  project-resource-path: /D:/project/light-chaser-server # 项目资源路径
+  source-image-path: /images/ # 源图片路径
+  cover-path: /covers/ # 封面路径

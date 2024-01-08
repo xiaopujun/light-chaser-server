@@ -1,6 +1,7 @@
 package com.dagu.lightchaser.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @TableName("source_image")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SourceImageEntity {
     @TableId(type = IdType.AUTO)
     private Long id;

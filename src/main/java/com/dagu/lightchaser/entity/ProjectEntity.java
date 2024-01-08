@@ -1,16 +1,16 @@
 package com.dagu.lightchaser.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @TableName("project")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProjectEntity implements Serializable {
     @TableId(type = IdType.AUTO)
     private Long id;
@@ -23,7 +23,7 @@ public class ProjectEntity implements Serializable {
     @TableLogic
     private int deleted;
     private String dataJson;
-    private String prevUrl;
-
-
+    private String cover;
+    @TableField(exist = false)
+    private MultipartFile file;
 }

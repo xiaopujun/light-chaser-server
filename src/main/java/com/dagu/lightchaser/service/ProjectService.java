@@ -18,4 +18,6 @@ public interface ProjectService {
     Long copyProject(Long id);
 
     ProjectEntity getProjectInfo(Long id);
+
+    String uploadCover(ProjectEntity project);
 }

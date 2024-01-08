@@ -48,4 +48,9 @@ public class ProjectController {
     public ApiResponse<Long> copyProject(@PathVariable(name = "id") Long id) {
         return ApiResponse.success(projectService.copyProject(id));
     }
+
+    @PostMapping(value = "/cover")
+    public ApiResponse<String> uploadCover(ProjectEntity project) {
+        return ApiResponse.success(projectService.uploadCover(project));
+    }
 }

@@ -57,12 +57,12 @@ public class SourceImageServiceImpl implements SourceImageService {
         SourceImageEntity record = sourceImageDao.selectOne(queryWrapper);
         //如果已经存在相同hash值的图片文件，则直接返回已存在的图片地址
         if (record != null)
-            return GlobalVariables.IMAGE_PATH + record.getUrl();
+            return GlobalVariables.SOURCE_IMAGE_PATH + record.getUrl();
 
         //生成文件路径、文件名
-        fileName = UUID.randomUUID() + suffix;
+        fileName = UUID.randomUUID().toString().replaceAll("-", "") + suffix;
         //保存文件
-        File uploadDir = new File(GlobalVariables.PROJECT_PATH + GlobalVariables.IMAGE_PATH);
+        File uploadDir = new File(GlobalVariables.PROJECT_RESOURCE_PATH + GlobalVariables.SOURCE_IMAGE_PATH + "/");
         if (!uploadDir.exists()) {
             boolean mkdirs = uploadDir.mkdirs();
             if (!mkdirs)
@@ -79,7 +79,7 @@ public class SourceImageServiceImpl implements SourceImageService {
         sourceImageEntity.setHash(hash);
         sourceImageDao.insert(sourceImageEntity);
         //返回文件路径
-        return GlobalVariables.IMAGE_PATH + sourceImageEntity.getUrl();
+        return GlobalVariables.SOURCE_IMAGE_PATH + sourceImageEntity.getUrl();
     }
 
     @Override
@@ -89,7 +89,7 @@ public class SourceImageServiceImpl implements SourceImageService {
         QueryWrapper<SourceImageEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SourceImageEntity::getProjectId, projectId).eq(SourceImageEntity::getDeleted, 0);
         List<SourceImageEntity> images = sourceImageDao.selectList(queryWrapper);
-        images.forEach((image) -> image.setUrl(GlobalVariables.IMAGE_PATH + image.getUrl()));
+        images.forEach((image) -> image.setUrl(GlobalVariables.SOURCE_IMAGE_PATH + image.getUrl()));
         return images;
     }
 
