@@ -17,7 +17,7 @@ public class FileEntity {
     /**
      * 图片路径，数据库仅存储路径片段，完整路径需要读取数据库片段后结合配置完整拼接后得出
      */
-    private String path;
+    private String url;
     private String name;
     private FileTypeEnum type;
     private LocalDateTime createTime;

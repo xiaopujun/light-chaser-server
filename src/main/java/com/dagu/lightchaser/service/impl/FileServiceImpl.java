@@ -57,7 +57,7 @@ public class FileServiceImpl implements FileService {
         FileEntity record = fileDao.selectOne(queryWrapper);
         //如果已经存在相同hash值的图片文件，则直接返回已存在的图片地址
         if (record != null)
-            return GlobalVariables.SOURCE_IMAGE_PATH + record.getPath();
+            return GlobalVariables.SOURCE_IMAGE_PATH + record.getUrl();
 
         //生成文件路径、文件名
         fileName = UUID.randomUUID().toString().replaceAll("-", "") + suffix;
@@ -75,11 +75,11 @@ public class FileServiceImpl implements FileService {
             throw new AppException(500, "图片写入文件系统失败");
         }
         //数据入库
-        fileEntity.setPath(fileName);
+        fileEntity.setUrl(fileName);
         fileEntity.setHash(hash);
         fileDao.insert(fileEntity);
         //返回文件路径
-        return GlobalVariables.SOURCE_IMAGE_PATH + fileEntity.getPath();
+        return GlobalVariables.SOURCE_IMAGE_PATH + fileEntity.getUrl();
     }
 
     @Override
@@ -89,7 +89,7 @@ public class FileServiceImpl implements FileService {
         QueryWrapper<FileEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(FileEntity::getProjectId, projectId).eq(FileEntity::getDeleted, 0);
         List<FileEntity> images = fileDao.selectList(queryWrapper);
-        images.forEach((image) -> image.setPath(GlobalVariables.SOURCE_IMAGE_PATH + image.getPath()));
+        images.forEach((image) -> image.setUrl(GlobalVariables.SOURCE_IMAGE_PATH + image.getUrl()));
         return images;
     }
 
