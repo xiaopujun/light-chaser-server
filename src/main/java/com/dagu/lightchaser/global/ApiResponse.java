@@ -1,7 +1,10 @@
 package com.dagu.lightchaser.global;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 
+@Getter
 public class ApiResponse<T> implements Serializable {
     //服务端返回的错误码
     private final int code;
@@ -32,15 +35,4 @@ public class ApiResponse<T> implements Serializable {
         return new ApiResponse<>(code, msg, null);
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public T getData() {
-        return data;
-    }
 }

@@ -1,7 +1,9 @@
 package com.dagu.lightchaser.config;
 
+import com.dagu.lightchaser.factory.WebParamEnumFactory;
 import com.dagu.lightchaser.global.GlobalVariables;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -14,5 +16,10 @@ public class ImageUrlInterceptor extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/images/**").addResourceLocations(projectResourcePath + GlobalVariables.SOURCE_IMAGE_PATH);
         registry.addResourceHandler("/covers/**").addResourceLocations(projectResourcePath + GlobalVariables.COVER_PATH);
         super.addResourceHandlers(registry);
+    }
+
+    @Override
+    protected void addFormatters(FormatterRegistry registry) {
+        registry.addConverterFactory(new WebParamEnumFactory());
     }
 }

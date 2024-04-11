@@ -34,7 +34,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectEntity> getProjectList() {
         LambdaQueryWrapper<ProjectEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(ProjectEntity::getId, ProjectEntity::getName, ProjectEntity::getSaveType, ProjectEntity::getDes, ProjectEntity::getStatus, ProjectEntity::getCover);
+        queryWrapper.select(ProjectEntity::getId, ProjectEntity::getName, ProjectEntity::getDes, ProjectEntity::getCover);
         List<ProjectEntity> projectEntities = projectDao.selectList(queryWrapper);
         //补全封面的完整路径
         for (ProjectEntity projectEntity : projectEntities) {

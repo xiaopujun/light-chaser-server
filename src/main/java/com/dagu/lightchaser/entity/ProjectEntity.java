@@ -18,8 +18,6 @@ public class ProjectEntity implements Serializable {
     private String des;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private int status;
-    private int saveType;
     @TableLogic
     private int deleted;
     private String dataJson;
