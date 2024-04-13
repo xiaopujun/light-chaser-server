@@ -1,7 +1,7 @@
 package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.dagu.lightchaser.dao.ProjectDao;
+import com.dagu.lightchaser.dao.ProjectMapper;
 import com.dagu.lightchaser.entity.ProjectEntity;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalVariables;
@@ -21,21 +21,21 @@ import java.util.UUID;
 public class ProjectServiceImpl implements ProjectService {
 
     @Resource
-    private ProjectDao projectDao;
+    private ProjectMapper projectMapper;
 
     @Override
     public Boolean updateProject(ProjectEntity project) {
         if (project == null || project.getId() == null)
             return false;
         project.setUpdateTime(LocalDateTime.now());
-        return projectDao.updateById(project) > 0;
+        return projectMapper.updateById(project) > 0;
     }
 
     @Override
     public List<ProjectEntity> getProjectList() {
         LambdaQueryWrapper<ProjectEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.select(ProjectEntity::getId, ProjectEntity::getName, ProjectEntity::getDes, ProjectEntity::getCover);
-        List<ProjectEntity> projectEntities = projectDao.selectList(queryWrapper);
+        List<ProjectEntity> projectEntities = projectMapper.selectList(queryWrapper);
         //补全封面的完整路径
         for (ProjectEntity projectEntity : projectEntities) {
             if (projectEntity.getCover() != null) {
@@ -51,14 +51,14 @@ public class ProjectServiceImpl implements ProjectService {
             return null;
         LambdaQueryWrapper<ProjectEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.select(ProjectEntity::getDataJson).eq(ProjectEntity::getId, id);
-        return projectDao.selectOne(queryWrapper).getDataJson();
+        return projectMapper.selectOne(queryWrapper).getDataJson();
     }
 
     @Override
     public Long createProject(ProjectEntity project) {
         if (project == null)
             return null;
-        projectDao.insert(project);
+        projectMapper.insert(project);
         return project.getId();
     }
 
@@ -66,7 +66,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Boolean deleteProject(Long id) {
         if (id == null)
             return false;
-        projectDao.deleteById(id);
+        projectMapper.deleteById(id);
         return true;
     }
 
@@ -74,14 +74,14 @@ public class ProjectServiceImpl implements ProjectService {
     public Long copyProject(Long id) {
         if (id == null)
             return null;
-        ProjectEntity project = projectDao.selectById(id);
+        ProjectEntity project = projectMapper.selectById(id);
         if (project == null)
             return null;
         project.setId(null);
         project.setName(project.getName() + " - 副本");
         project.setCreateTime(null);
         project.setUpdateTime(null);
-        projectDao.insert(project);
+        projectMapper.insert(project);
         return project.getId();
     }
 
@@ -89,7 +89,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectEntity getProjectInfo(Long id) {
         if (id == null)
             return null;
-        return projectDao.selectById(id);
+        return projectMapper.selectById(id);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ProjectServiceImpl implements ProjectService {
         LambdaQueryWrapper<ProjectEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProjectEntity::getId, project.getId())
                 .eq(ProjectEntity::getDeleted, 0);
-        ProjectEntity record = projectDao.selectOne(queryWrapper);
+        ProjectEntity record = projectMapper.selectOne(queryWrapper);
         if (record != null && record.getCover() != null) {
             String oldFileName = record.getCover();
             String oldAbsolutePath = GlobalVariables.PROJECT_RESOURCE_PATH + GlobalVariables.COVER_PATH + oldFileName;
@@ -138,7 +138,7 @@ public class ProjectServiceImpl implements ProjectService {
         //数据入库
         project.setCover(fileName);
         project.setUpdateTime(LocalDateTime.now());
-        projectDao.updateById(project);
+        projectMapper.updateById(project);
         return GlobalVariables.COVER_PATH + fileName;
     }
 }

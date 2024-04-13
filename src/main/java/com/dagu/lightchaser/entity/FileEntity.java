@@ -2,6 +2,7 @@ package com.dagu.lightchaser.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.dagu.lightchaser.constants.FileTypeEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @TableName("file")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FileEntity {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableId(type = IdType.AUTO)
     private Long id;
     /**
@@ -19,6 +21,7 @@ public class FileEntity {
      */
     private String url;
     private String name;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private FileTypeEnum type;
     private LocalDateTime createTime;
     @TableLogic

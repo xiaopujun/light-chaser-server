@@ -2,7 +2,7 @@ package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.dagu.lightchaser.dao.FileDao;
+import com.dagu.lightchaser.dao.FileMapper;
 import com.dagu.lightchaser.entity.FileEntity;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalVariables;
@@ -23,7 +23,7 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     @Resource
-    private FileDao fileDao;
+    private FileMapper fileMapper;
 
     @Override
     public String uploadImage(FileEntity fileEntity) {
@@ -54,7 +54,7 @@ public class FileServiceImpl implements FileService {
         queryWrapper.eq(FileEntity::getProjectId, fileEntity.getProjectId())
                 .eq(FileEntity::getHash, hash)
                 .eq(FileEntity::getDeleted, 0);
-        FileEntity record = fileDao.selectOne(queryWrapper);
+        FileEntity record = fileMapper.selectOne(queryWrapper);
         //如果已经存在相同hash值的图片文件，则直接返回已存在的图片地址
         if (record != null)
             return GlobalVariables.SOURCE_IMAGE_PATH + record.getUrl();
@@ -77,7 +77,7 @@ public class FileServiceImpl implements FileService {
         //数据入库
         fileEntity.setUrl(fileName);
         fileEntity.setHash(hash);
-        fileDao.insert(fileEntity);
+        fileMapper.insert(fileEntity);
         //返回文件路径
         return GlobalVariables.SOURCE_IMAGE_PATH + fileEntity.getUrl();
     }
@@ -88,7 +88,7 @@ public class FileServiceImpl implements FileService {
             throw new AppException(500, "项目id错误");
         QueryWrapper<FileEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(FileEntity::getProjectId, projectId).eq(FileEntity::getDeleted, 0);
-        List<FileEntity> images = fileDao.selectList(queryWrapper);
+        List<FileEntity> images = fileMapper.selectList(queryWrapper);
         images.forEach((image) -> image.setUrl(GlobalVariables.SOURCE_IMAGE_PATH + image.getUrl()));
         return images;
     }
@@ -97,7 +97,7 @@ public class FileServiceImpl implements FileService {
     public Boolean delImageSource(Long imageId) {
         if (imageId == null || imageId <= 0)
             throw new AppException(500, "图片id错误");
-        int row = fileDao.deleteById(imageId);
+        int row = fileMapper.deleteById(imageId);
         return row > 0;
     }
 

@@ -1,6 +1,7 @@
 package com.dagu.lightchaser.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @TableName("project")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProjectEntity implements Serializable {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableId(type = IdType.AUTO)
     private Long id;
     private String name;
