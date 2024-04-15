@@ -1,9 +1,8 @@
 package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.dagu.lightchaser.dao.DatasourceMapper;
+import com.dagu.lightchaser.mapper.DatasourceMapper;
 import com.dagu.lightchaser.entity.DatasourceEntity;
-import com.dagu.lightchaser.entity.ProjectEntity;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.service.DatasourceService;
 import org.springframework.stereotype.Service;

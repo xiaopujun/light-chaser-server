@@ -1,7 +1,7 @@
 package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.dagu.lightchaser.dao.ProjectMapper;
+import com.dagu.lightchaser.mapper.ProjectMapper;
 import com.dagu.lightchaser.entity.ProjectEntity;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalVariables;

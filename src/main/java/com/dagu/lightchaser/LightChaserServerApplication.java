@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.dagu.lightchaser.dao")
+@MapperScan("com.dagu.lightchaser.mapper")
 public class LightChaserServerApplication {
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.dagu.lightchaser.dao;
+package com.dagu.lightchaser.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.dagu.lightchaser.entity.ProjectEntity;
