@@ -9,6 +9,8 @@ import com.dagu.lightchaser.service.DatasourceService;
 import com.dagu.lightchaser.service.DbExecutorService;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -17,6 +19,8 @@ import java.util.Map;
 
 @Service
 public class DbExecutorServiceImpl implements DbExecutorService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DbExecutorServiceImpl.class);
 
     @Resource
     private DatasourceService datasourceService;
@@ -39,6 +43,7 @@ public class DbExecutorServiceImpl implements DbExecutorService {
                 return res.get(0);
             return res;
         } catch (Exception e) {
+            logger.error("SQL执行错误, 请检查SQL语法", e);
             throw new AppException(500, "SQL执行错误, 请检查SQL语法");
         }
     }

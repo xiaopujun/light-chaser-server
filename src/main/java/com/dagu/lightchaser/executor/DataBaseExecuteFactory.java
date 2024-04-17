@@ -34,7 +34,7 @@ public class DataBaseExecuteFactory {
         dataSource.setUrl(datasourceEntity.getUrl());
         dataSource.setUsername(datasourceEntity.getUsername());
         dataSource.setPassword(datasourceEntity.getPassword());
-        Environment environment = new Environment("development", new JdbcTransactionFactory(), dataSource);
+        Environment environment = new Environment(key, new JdbcTransactionFactory(), dataSource);
         Configuration configuration = new Configuration(environment);
         configuration.addMapper(DataBaselMapper.class);
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
