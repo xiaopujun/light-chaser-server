@@ -1,6 +1,9 @@
 package com.dagu.lightchaser.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.dagu.lightchaser.entity.DatasourceEntity;
+import com.dagu.lightchaser.entity.PageParamEntity;
 import com.dagu.lightchaser.global.ApiResponse;
 import com.dagu.lightchaser.service.DatasourceService;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,11 @@ public class DataSourceController {
     @GetMapping("/list")
     public ApiResponse<List<DatasourceEntity>> getDataSourceList() {
         return ApiResponse.success(datasourceService.getDataSourceList());
+    }
+
+    @PostMapping("/pageList")
+    public ApiResponse<Page<DatasourceEntity>> getDataSourcePageList(@RequestBody PageParamEntity pageParam) {
+        return ApiResponse.success(datasourceService.getDataSourcePageList(pageParam));
     }
 
     @PostMapping("/add")

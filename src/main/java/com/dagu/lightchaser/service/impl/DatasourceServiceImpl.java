@@ -1,9 +1,12 @@
 package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.dagu.lightchaser.mapper.DatasourceMapper;
+import com.baomidou.mybatisplus.core.enums.SqlLike;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dagu.lightchaser.entity.DatasourceEntity;
+import com.dagu.lightchaser.entity.PageParamEntity;
 import com.dagu.lightchaser.global.AppException;
+import com.dagu.lightchaser.mapper.DatasourceMapper;
 import com.dagu.lightchaser.service.DatasourceService;
 import org.springframework.stereotype.Service;
 
@@ -101,6 +104,21 @@ public class DatasourceServiceImpl implements DatasourceService {
         }
         return true;
     }
+
+    @Override
+    public Page<DatasourceEntity> getDataSourcePageList(PageParamEntity pageParam) {
+        if (pageParam == null)
+            return new Page<>();
+        Page<DatasourceEntity> page = new Page<>();
+        page.setSize(pageParam.getSize() == 0 ? 10 : pageParam.getSize());
+        page.setCurrent(pageParam.getCurrent() == 0 ? 1 : pageParam.getCurrent());
+        LambdaQueryWrapper<DatasourceEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(DatasourceEntity::getId, DatasourceEntity::getName, DatasourceEntity::getUsername, DatasourceEntity::getType, DatasourceEntity::getUrl);
+        if (pageParam.getSearchValue() != null && !pageParam.getSearchValue().isEmpty())
+            wrapper.like(DatasourceEntity::getName, pageParam.getSearchValue());
+        return datasourceMapper.selectPage(page, wrapper);
+    }
+
 }
 
 

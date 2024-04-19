@@ -1,6 +1,8 @@
 package com.dagu.lightchaser.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dagu.lightchaser.entity.DatasourceEntity;
+import com.dagu.lightchaser.entity.PageParamEntity;
 
 import java.util.List;
 
@@ -24,4 +26,6 @@ public interface DatasourceService {
     Boolean delDataSource(Long id);
 
     Boolean testDataSourceConnect(Long id);
+
+    Page<DatasourceEntity> getDataSourcePageList(PageParamEntity pageParam);
 }
