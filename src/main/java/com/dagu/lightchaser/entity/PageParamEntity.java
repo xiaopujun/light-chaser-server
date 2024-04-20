@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class PageParamEntity {
-    private int size;
-    private int current;
+    private Long size;
+    private Long current;
     private String searchValue;
 }

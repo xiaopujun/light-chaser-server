@@ -1,13 +1,13 @@
 package com.dagu.lightchaser.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dagu.lightchaser.entity.PageParamEntity;
 import com.dagu.lightchaser.entity.ProjectEntity;
 
 import java.util.List;
 
 public interface ProjectService {
     Boolean updateProject(ProjectEntity project);
-
-    List<ProjectEntity> getProjectList();
 
     String getProjectData(Long id);
 
@@ -20,4 +20,6 @@ public interface ProjectService {
     ProjectEntity getProjectInfo(Long id);
 
     String uploadCover(ProjectEntity project);
+
+    Page<ProjectEntity> getProjectPageList(PageParamEntity pageParam);
 }

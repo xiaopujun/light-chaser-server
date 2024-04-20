@@ -1,10 +1,12 @@
 package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.dagu.lightchaser.mapper.ProjectMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dagu.lightchaser.entity.PageParamEntity;
 import com.dagu.lightchaser.entity.ProjectEntity;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalVariables;
+import com.dagu.lightchaser.mapper.ProjectMapper;
 import com.dagu.lightchaser.service.ProjectService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,20 +30,6 @@ public class ProjectServiceImpl implements ProjectService {
             return false;
         project.setUpdateTime(LocalDateTime.now());
         return projectMapper.updateById(project) > 0;
-    }
-
-    @Override
-    public List<ProjectEntity> getProjectList() {
-        LambdaQueryWrapper<ProjectEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(ProjectEntity::getId, ProjectEntity::getName, ProjectEntity::getDes, ProjectEntity::getCover);
-        List<ProjectEntity> projectEntities = projectMapper.selectList(queryWrapper);
-        //补全封面的完整路径
-        for (ProjectEntity projectEntity : projectEntities) {
-            if (projectEntity.getCover() != null) {
-                projectEntity.setCover(GlobalVariables.COVER_PATH + projectEntity.getCover());
-            }
-        }
-        return projectEntities;
     }
 
     @Override
@@ -140,5 +127,26 @@ public class ProjectServiceImpl implements ProjectService {
         project.setUpdateTime(LocalDateTime.now());
         projectMapper.updateById(project);
         return GlobalVariables.COVER_PATH + fileName;
+    }
+
+    @Override
+    public Page<ProjectEntity> getProjectPageList(PageParamEntity pageParam) {
+        if (pageParam == null)
+            return new Page<>();
+        long current = pageParam.getCurrent() == null ? 1 : pageParam.getCurrent();
+        long size = pageParam.getSize() == null ? 10 : pageParam.getSize();
+        Page<ProjectEntity> page = new Page<>(current, size);
+        LambdaQueryWrapper<ProjectEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(ProjectEntity::getId, ProjectEntity::getName, ProjectEntity::getDes, ProjectEntity::getCover);
+        if (pageParam.getSearchValue() != null)
+            wrapper.like(ProjectEntity::getName, pageParam.getSearchValue());
+        Page<ProjectEntity> pageData = projectMapper.selectPage(page, wrapper);
+        //补全封面的完整路径
+        for (ProjectEntity projectEntity : pageData.getRecords()) {
+            if (projectEntity.getCover() != null) {
+                projectEntity.setCover(GlobalVariables.COVER_PATH + projectEntity.getCover());
+            }
+        }
+        return pageData;
     }
 }
