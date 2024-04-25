@@ -27,6 +27,14 @@ public class DatasourceServiceImpl implements DatasourceService {
     @Resource
     private DatasourceMapper datasourceMapper;
 
+
+    @Override
+    public List<DatasourceEntity> getDataSourceList() {
+        LambdaQueryWrapper<DatasourceEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(DatasourceEntity::getId, DatasourceEntity::getName, DatasourceEntity::getUsername, DatasourceEntity::getType, DatasourceEntity::getUrl);
+        return datasourceMapper.selectList(wrapper);
+    }
+
     @Override
     public Long addDataSource(DatasourceEntity datasource) {
         if (datasource == null)
