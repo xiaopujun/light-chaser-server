@@ -52,7 +52,7 @@ public class DataSourceController {
         return ApiResponse.success(datasourceService.delDataSource(id));
     }
 
-    @GetMapping("/connect/{id}")
+    @GetMapping("/test/{id}")
     public ApiResponse<Boolean> testDataSourceConnect(@PathVariable Long id) {
         return ApiResponse.success("链接正常", datasourceService.testDataSourceConnect(id));
     }

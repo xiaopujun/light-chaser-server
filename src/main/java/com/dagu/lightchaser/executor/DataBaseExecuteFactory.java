@@ -34,6 +34,17 @@ public class DataBaseExecuteFactory {
         dataSource.setUrl(datasourceEntity.getUrl());
         dataSource.setUsername(datasourceEntity.getUsername());
         dataSource.setPassword(datasourceEntity.getPassword());
+
+        // 设置获取连接时的最大等待时间，单位毫秒
+        dataSource.setMaxWait(3000);
+        dataSource.setConnectTimeout(3000);
+        // 设置获取连接失败后的重试次数
+        dataSource.setNotFullTimeoutRetryCount(3);
+        // 设置获取连接失败后是否继续尝试
+        dataSource.setBreakAfterAcquireFailure(true);
+        // 设置获取连接出错时的自动重连次数
+        dataSource.setConnectionErrorRetryAttempts(3);
+
         Environment environment = new Environment(key, new JdbcTransactionFactory(), dataSource);
         Configuration configuration = new Configuration(environment);
         configuration.addMapper(DataBaselMapper.class);
