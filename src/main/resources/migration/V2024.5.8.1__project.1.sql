@@ -1,4 +1,4 @@
-create database light_chaser_server default character set utf8mb4 collate utf8mb4_general_ci;
+# create database light_chaser_server default character set utf8mb4 collate utf8mb4_general_ci;
 
 drop table if exists datasource;
 
