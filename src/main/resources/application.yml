@@ -8,6 +8,7 @@ spring:
 
 
 
+
 # mybatis-plus配置
 mybatis-plus:
   type-aliases-package: com.dagu.lightchaser.entity
@@ -25,3 +26,8 @@ light-chaser:
   project-resource-path: /D:/project/light-chaser-server # 项目资源路径
   source-image-path: /images/ # 源图片路径
   cover-path: /covers/ # 封面路径
+
+logging:
+  config: classpath:log4j2-spring.xml
+  level:
+    cn.jay.repository: trace

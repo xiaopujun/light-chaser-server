@@ -39,6 +39,7 @@ public class DbExecutorServiceImpl implements DbExecutorService {
         SqlSessionFactory sqlSessionFactory = DataBaseExecuteFactory.buildDataSource(dataSourceEntity);
         try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
             List<Map<String, Object>> res = sqlSession.getMapper(DataBaselMapper.class).executeQuery(sql);
+            logger.info("SQL执行成功,SQL: {}, 结果为: {}", sql, res);
             if (res.size() == 1)
                 return res.get(0);
             return res;
