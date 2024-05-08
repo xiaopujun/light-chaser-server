@@ -9,7 +9,7 @@ import java.util.Map;
 public interface DataBaselMapper {
 
     @SelectProvider(type = CustomSQLProvider.class, method = "getCustomSQL")
-    List<Map<String, Object>> executeQuery(@Param("sql") String sql);
+    List<Map<String, Object>> executeQuery(@Param("migration") String sql);
 }
 
 
