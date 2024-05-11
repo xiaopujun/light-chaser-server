@@ -3,9 +3,16 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-.mvn
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
 
-### STS ###
+### Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -13,12 +20,6 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
 
 ### NetBeans ###
 /nbproject/private/
@@ -32,6 +33,6 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/main/resources/rebel.xml
 
-logs/
+### Mac OS ###
+.DS_Store
