@@ -8,9 +8,14 @@
         <artifactId>light-chaser-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>lightchaser</groupId>
-    <artifactId>lightchaser-core</artifactId>
-    <packaging>jar</packaging>
+
+    <artifactId>lightchaser-data-provider</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>data-provider-base</module>
+        <module>jdbc-data-provider</module>
+    </modules>
+
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

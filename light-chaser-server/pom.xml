@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.dagu.lightchaser</groupId>
+        <groupId>lightchaser</groupId>
         <artifactId>light-chaser-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -13,12 +13,26 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.dagu.lightchaser</groupId>
+            <groupId>lightchaser</groupId>
             <artifactId>lightchaser-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
     </dependencies>
+
+
+
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

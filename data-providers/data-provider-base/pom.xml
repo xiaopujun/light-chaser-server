@@ -5,13 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>lightchaser</groupId>
-        <artifactId>light-chaser-parent</artifactId>
+        <artifactId>lightchaser-data-provider</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>lightchaser</groupId>
-    <artifactId>lightchaser-core</artifactId>
-    <packaging>jar</packaging>
 
+    <artifactId>data-provider-base</artifactId>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>lightchaser</groupId>
+            <artifactId>lightchaser-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
