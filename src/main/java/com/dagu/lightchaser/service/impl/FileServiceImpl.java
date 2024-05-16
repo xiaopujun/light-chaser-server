@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @Service
 public class FileServiceImpl implements FileService {
 
-    @Resource
+    @Autowired
     private FileMapper fileMapper;
 
     @Override

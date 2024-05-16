@@ -7,14 +7,14 @@ import com.dagu.lightchaser.global.ApiResponse;
 import com.dagu.lightchaser.service.DatasourceService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/datasource")
 public class DataSourceController {
 
-    @Resource
+    @Autowired
     private DatasourceService datasourceService;
 
     @GetMapping("/get/{id}")

@@ -11,7 +11,7 @@ import com.dagu.lightchaser.service.ProjectService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
-    @Resource
+    @Autowired
     private ProjectMapper projectMapper;
 
     @Override

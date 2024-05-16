@@ -13,7 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class DbExecutorServiceImpl implements DbExecutorService {
 
     private static final Logger logger = LoggerFactory.getLogger(DbExecutorServiceImpl.class);
 
-    @Resource
+    @Autowired
     private DatasourceService datasourceService;
 
     @Override

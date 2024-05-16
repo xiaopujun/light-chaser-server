@@ -5,14 +5,13 @@ import com.dagu.lightchaser.entity.PageParamEntity;
 import com.dagu.lightchaser.entity.ProjectEntity;
 import com.dagu.lightchaser.global.ApiResponse;
 import com.dagu.lightchaser.service.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/api/project")
 public class ProjectController {
-    @Resource
+    @Autowired
     private ProjectService projectService;
 
     @PostMapping("/pageList")

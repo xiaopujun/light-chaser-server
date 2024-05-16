@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +29,7 @@ public class DatasourceServiceImpl implements DatasourceService {
 
     private static final Logger logger = LoggerFactory.getLogger(DatasourceServiceImpl.class);
 
-    @Resource
+    @Autowired
     private DatasourceMapper datasourceMapper;
 
 

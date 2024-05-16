@@ -5,14 +5,14 @@ import com.dagu.lightchaser.global.ApiResponse;
 import com.dagu.lightchaser.service.FileService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/file")
 public class FileController {
 
-    @Resource
+    @Autowired
     private FileService fileService;
 
     @PostMapping(value = "/upload")
