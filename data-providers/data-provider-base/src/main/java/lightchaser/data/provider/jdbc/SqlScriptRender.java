@@ -33,6 +33,7 @@ import lightchaser.data.provider.calcite.dialect.QueryScriptProcessor;
 import lightchaser.data.provider.calcite.dialect.SqlBuilder;
 import lightchaser.data.provider.script.ScriptRender;
 import lightchaser.data.provider.script.SqlStringUtils;
+import lightchaser.data.provider.script.VariablePlaceholder;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.sql.SqlDialect;
@@ -144,27 +145,27 @@ public class SqlScriptRender extends ScriptRender {
             }
         }
 
-        List<VariablePlaceholder> placeholders = null;
-        try {
-            placeholders = SqlParserVariableResolver.resolve(sqlDialect, selectSql, variableMap);
-        } catch (Exception e) {
-            SqlParseError sqlParseError = new SqlParseError(e);
-            sqlParseError.setSql(selectSql);
-            sqlParseError.setDbType(sqlDialect.getDatabaseProduct().name());
-            RequestContext.putWarning(MessageResolver.getMessage("message.provider.sql.parse.failed"), sqlParseError);
-            placeholders = RegexVariableResolver.resolve(sqlDialect, selectSql, variableMap);
-        }
-
-        placeholders = placeholders.stream()
-                .sorted(Comparator.comparingDouble(holder -> (holder instanceof SimpleVariablePlaceholder) ? 1000 + holder.getOriginalSqlFragment().length() : -holder.getOriginalSqlFragment().length()))
-                .collect(Collectors.toList());
-
-        if (CollectionUtils.isNotEmpty(placeholders)) {
-            for (VariablePlaceholder placeholder : placeholders) {
-                ReplacementPair replacementPair = placeholder.replacementPair();
-                selectSql = StringUtils.replaceIgnoreCase(selectSql, replacementPair.getPattern(), replacementPair.getReplacement());
-            }
-        }
+//        List<VariablePlaceholder> placeholders = null;
+//        try {
+//            placeholders = SqlParserVariableResolver.resolve(sqlDialect, selectSql, variableMap);
+//        } catch (Exception e) {
+//            SqlParseError sqlParseError = new SqlParseError(e);
+//            sqlParseError.setSql(selectSql);
+//            sqlParseError.setDbType(sqlDialect.getDatabaseProduct().name());
+//            RequestContext.putWarning(MessageResolver.getMessage("message.provider.sql.parse.failed"), sqlParseError);
+//            placeholders = RegexVariableResolver.resolve(sqlDialect, selectSql, variableMap);
+//        }
+//
+//        placeholders = placeholders.stream()
+//                .sorted(Comparator.comparingDouble(holder -> (holder instanceof SimpleVariablePlaceholder) ? 1000 + holder.getOriginalSqlFragment().length() : -holder.getOriginalSqlFragment().length()))
+//                .collect(Collectors.toList());
+//
+//        if (CollectionUtils.isNotEmpty(placeholders)) {
+//            for (VariablePlaceholder placeholder : placeholders) {
+//                ReplacementPair replacementPair = placeholder.replacementPair();
+//                selectSql = StringUtils.replaceIgnoreCase(selectSql, replacementPair.getPattern(), replacementPair.getReplacement());
+//            }
+//        }
 
         return selectSql;
     }

@@ -4,7 +4,6 @@ import lightchaser.core.base.common.MessageResolver;
 import lightchaser.core.base.exception.Exceptions;
 import lightchaser.core.common.FileUtils;
 import lightchaser.core.data.provider.*;
-import lightchaser.core.provider.*;
 
 import lightchaser.data.provider.base.dto.DataProviderException;
 import lightchaser.data.provider.calcite.SqlParserUtils;

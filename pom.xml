@@ -19,6 +19,7 @@
         <module>light-chaser-server</module>
         <module>core</module>
         <module>data-providers</module>
+        <module>light-chaser-security</module>
     </modules>
     <!--    <description>light chaser server</description>-->
     <properties>

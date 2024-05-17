@@ -48,4 +48,10 @@ public class Application implements ApplicationContextAware {
     }
 
 
+    public static String getTokenSecret() {
+        return getProperty("lightchaser.security.token.secret", "d@a$t%a^r&a*t");
+    }
+
+
+
 }

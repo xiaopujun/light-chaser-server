@@ -50,7 +50,7 @@ public class LocalDB {
     private static final String H2_PARAM = ";LOG=0;DATABASE_TO_UPPER=false;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;CACHE_SIZE=65536;LOCK_MODE=0;UNDO_LOG=0";
 
 
-        public static final SqlDialect SQL_DIALECT = new H2Dialect();
+    public static final SqlDialect SQL_DIALECT = new H2Dialect();
 
     private static final String SELECT_START_SQL = "SELECT * FROM `%s` ";
 

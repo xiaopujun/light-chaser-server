@@ -17,7 +17,34 @@
             <artifactId>lightchaser-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>lightchaser</groupId>
+            <artifactId>lightchaser-data-provider-base</artifactId>
+            <version>${project.version}</version>
 
+        </dependency>
+
+        <dependency>
+            <groupId>lightchaser</groupId>
+            <artifactId>light-chaser-security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>lightchaser</groupId>
+            <artifactId>lightchaser-jdbc-data-provider</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
@@ -28,6 +55,7 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>3.0.0</version>
         </dependency>
+
 
     </dependencies>
 

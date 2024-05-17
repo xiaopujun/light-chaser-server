@@ -8,14 +8,14 @@
         <artifactId>lightchaser-data-provider</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-
-    <artifactId>jdbc-data-provider</artifactId>
+    <groupId>lightchaser</groupId>
+    <artifactId>lightchaser-jdbc-data-provider</artifactId>
 
 
     <dependencies>
         <dependency>
             <groupId>lightchaser</groupId>
-            <artifactId>data-provider-base</artifactId>
+            <artifactId>lightchaser-data-provider-base</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
