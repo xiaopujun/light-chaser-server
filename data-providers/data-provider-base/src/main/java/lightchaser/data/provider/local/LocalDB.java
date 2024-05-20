@@ -26,6 +26,7 @@ import lightchaser.core.common.Application;
 import lightchaser.core.data.provider.*;
 import lightchaser.data.provider.calcite.dialect.H2Dialect;
 import lightchaser.data.provider.jdbc.DataTypeUtils;
+import lightchaser.data.provider.jdbc.ResultSetMapper;
 import lightchaser.data.provider.jdbc.SqlScriptRender;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.sql.SqlDialect;

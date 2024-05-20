@@ -1,6 +1,5 @@
 package lightchaser.data.provider.jdbc;
 
-import com.dagu.lightchaser.dataprovider.base.provider.jdbc.JdbcProperties;
 
 import javax.sql.DataSource;
 

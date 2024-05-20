@@ -19,10 +19,10 @@ public class BasicValidRequestInterceptor  implements HandlerInterceptor {
     private static final String staticPath = "/static";
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (!isValidRequest(request)) {
-            request.getRequestDispatcher("/").forward(request, response);
-            return false;
-        }
+//        if (!isValidRequest(request)) {
+//            request.getRequestDispatcher("/").forward(request, response);
+//            return false;
+//        }
         return true;
     }
 

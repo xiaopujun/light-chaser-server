@@ -21,7 +21,6 @@ package lightchaser.data.provider.jdbc;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidDataSourceFactory;
 //import com.dagu.lightchaser.dataprovider.jdbc.JdbcDataProvider;
-import lightchaser.data.provider.JdbcProperties;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
