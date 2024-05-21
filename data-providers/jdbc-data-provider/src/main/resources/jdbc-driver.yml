@@ -21,8 +21,8 @@ CLICKHOUSE:
   name: CLICKHOUSE
   driver-class: com.clickhouse.jdbc.ClickHouseDriver
   url-prefix: jdbc:clickhouse://
-  sql-dialect: datart.data.provider.calcite.dialect.ClickHouseSqlDialectSupport
-  adapter-class: datart.data.provider.jdbc.adapters.ClickHouseDataProviderAdapter
+  sql-dialect: lightchaser.data.provider.calcite.dialect.ClickHouseSqlDialectSupport
+  adapter-class: lightchaser.data.provider.jdbc.adapters.ClickHouseDataProviderAdapter
 
 DERBY:
   db-type: DERBY
@@ -43,7 +43,7 @@ DM:
   literal-quote: "'"
   identifier-quote: "\""
   url-prefix: "jdbc:dm://"
-  adapter-class: "datart.data.provider.jdbc.adapters.DmDataProviderAdapter"
+  adapter-class: "lightchaser.data.provider.jdbc.adapters.DmDataProviderAdapter"
 
 FIREBIRD:
   db-type: FIREBIRD
@@ -56,14 +56,14 @@ H2:
   name: H2
   driver-class: org.h2.Driver
   url-prefix: jdbc:h2
-  sql-dialect: datart.data.provider.calcite.dialect.H2Dialect
+  sql-dialect: lightchaser.data.provider.calcite.dialect.H2Dialect
 
 HIVE:
   db-type: HIVE
   name: HIVE
   driver-class: org.apache.hive.jdbc.HiveDriver
-  sql-dialect: datart.data.provider.calcite.dialect.HiveSqlStdOperatorSupport
-  adapter-class: datart.data.provider.jdbc.adapters.HiveDataProviderAdapter
+  sql-dialect: lightchaser.data.provider.calcite.dialect.HiveSqlStdOperatorSupport
+  adapter-class: lightchaser.data.provider.jdbc.adapters.HiveDataProviderAdapter
   url-prefix: jdbc:hive2://
   identifier-quote: "`"
   identifier-end-quote: "`"
@@ -113,8 +113,8 @@ LUCIDDB:
 MSSQL:
   db-type: MSSQL
   name: MSSQL
-  sql-dialect: datart.data.provider.calcite.dialect.MsSqlStdOperatorSupport
-  adapter-class: datart.data.provider.jdbc.adapters.MsSqlDataProviderAdapter
+  sql-dialect: lightchaser.data.provider.calcite.dialect.MsSqlStdOperatorSupport
+  adapter-class: lightchaser.data.provider.jdbc.adapters.MsSqlDataProviderAdapter
   driver-class: com.microsoft.sqlserver.jdbc.SQLServerDriver
   url-prefix: jdbc:sqlserver://
 
@@ -123,7 +123,7 @@ MYSQL:
   name: MYSQL
   driver-class: com.mysql.cj.jdbc.Driver
   url-prefix: jdbc:mysql://
-  sql-dialect: datart.data.provider.calcite.dialect.MysqlSqlStdOperatorSupport
+  sql-dialect: lightchaser.data.provider.calcite.dialect.MysqlSqlStdOperatorSupport
 
 NEOVIEW:
   db-type: NEOVIEW
@@ -141,9 +141,9 @@ ORACLE:
   db-type: ORACLE
   name: ORACLE
   driver-class: oracle.jdbc.driver.OracleDriver
-  adapter-class: datart.data.provider.jdbc.adapters.OracleDataProviderAdapter
+  adapter-class: lightchaser.data.provider.jdbc.adapters.OracleDataProviderAdapter
   url-prefix: jdbc:oracle:thin:@
-  sql-dialect: datart.data.provider.calcite.dialect.OracleSqlStdOperatorSupport
+  sql-dialect: lightchaser.data.provider.calcite.dialect.OracleSqlStdOperatorSupport
 
 PHOENIX:
   db-type: PHOENIX
@@ -156,14 +156,14 @@ POSTGRESQL:
   name: POSTGRESQL
   driver-class: org.postgresql.Driver
   url-prefix: jdbc:postgresql://
-  sql-dialect: datart.data.provider.calcite.dialect.PostgresqlSqlDialectSupport
+  sql-dialect: lightchaser.data.provider.calcite.dialect.PostgresqlSqlDialectSupport
 
 PRESTO:
   db-type: PRESTO
   name: PRESTO
   driver-class: io.prestosql.jdbc.PrestoDriver
   url-prefix: jdbc:presto://
-  adapter-class: datart.data.provider.jdbc.adapters.PrestoDataProviderAdapter
+  adapter-class: lightchaser.data.provider.jdbc.adapters.PrestoDataProviderAdapter
 
 SPARK:
   db-type: SPARK

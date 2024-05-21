@@ -287,17 +287,17 @@ public class JdbcDataProvider extends DataProvider {
             //Build in database types
             Map<String, Map<String, String>> buildIn = loadYml(JDBC_DRIVER_BUILD_IN);
             // user ext database types
-            Map<String, Map<String, String>> extDrivers = loadYml(new File(FileUtils.concatPath(System.getProperty("user.dir"), JDBC_DRIVER_EXT)));
-            if (!CollectionUtils.isEmpty(extDrivers)) {
-                for (String key : extDrivers.keySet()) {
-                    Map<String, String> driver = buildIn.get(key);
-                    if (driver == null) {
-                        buildIn.put(key, extDrivers.get(key));
-                    } else {
-                        driver.putAll(extDrivers.get(key));
-                    }
-                }
-            }
+//            Map<String, Map<String, String>> extDrivers = loadYml(new File(FileUtils.concatPath(System.getProperty("user.dir"), JDBC_DRIVER_EXT)));
+//            if (!CollectionUtils.isEmpty(extDrivers)) {
+//                for (String key : extDrivers.keySet()) {
+//                    Map<String, String> driver = buildIn.get(key);
+//                    if (driver == null) {
+//                        buildIn.put(key, extDrivers.get(key));
+//                    } else {
+//                        driver.putAll(extDrivers.get(key));
+//                    }
+//                }
+//            }
 
             return buildIn.entrySet().stream().map(entry -> {
                 try {
