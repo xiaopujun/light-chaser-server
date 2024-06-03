@@ -25,8 +25,8 @@ mybatis-plus:
 
 light-chaser:
   project-resource-path: /D:/project/light-chaser-server # 项目资源路径
-  source-image-path: /images/ # 源图片路径
-  cover-path: /covers/ # 封面路径
+  source-image-path: /static/images/ # 源图片路径
+  cover-path: /static/covers/ # 封面路径
   migration: # 是否自动跑sql脚本
     enable: true
 
