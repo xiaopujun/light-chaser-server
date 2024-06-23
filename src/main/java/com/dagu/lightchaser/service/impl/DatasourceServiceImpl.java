@@ -2,20 +2,20 @@ package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dagu.lightchaser.constants.DataBaseEnum;
 import com.dagu.lightchaser.entity.DatasourceEntity;
 import com.dagu.lightchaser.entity.PageParamEntity;
 import com.dagu.lightchaser.executor.DataBaseExecuteFactory;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.mapper.DatasourceMapper;
 import com.dagu.lightchaser.service.DatasourceService;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -95,20 +95,16 @@ public class DatasourceServiceImpl implements DatasourceService {
         DatasourceEntity datasource = getDataSource(id);
         if (datasource == null)
             return false;
-        SqlSession sqlSession = null;
         try {
-            SqlSessionFactory sqlSessionFactory = DataBaseExecuteFactory.buildDataSource(datasource);
-            sqlSession = sqlSessionFactory.openSession();
-            Connection connection = sqlSession.getConnection();
-            boolean valid = connection.isValid(5);
-            if (!valid)
-                throw new AppException(500, "当前链接无效");
+            JdbcTemplate jdbcTemplate = DataBaseExecuteFactory.buildDataSource(datasource);
+            if (DataBaseEnum.ORACLE.equals(datasource.getType())) {
+                jdbcTemplate.execute("select 1 from dual");
+            } else
+                jdbcTemplate.execute("select 1");
         } catch (Exception exception) {
             logger.error(exception.getMessage(), exception);
-            throw new AppException(500, "链接失败: " + exception.getMessage());
-        } finally {
-            if (sqlSession != null)
-                sqlSession.close();
+            DataBaseExecuteFactory.removeDatasourceCache(datasource);
+            throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "link failed: " + exception.getMessage());
         }
         return true;
     }

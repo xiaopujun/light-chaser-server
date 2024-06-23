@@ -3,11 +3,7 @@ package com.dagu.lightchaser.executor;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.dagu.lightchaser.constants.DataBaseEnum;
 import com.dagu.lightchaser.entity.DatasourceEntity;
-import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +12,7 @@ public class DataBaseExecuteFactory {
 
     private static final Map<DataBaseEnum, String> databaseDriverMap = new HashMap<>();
 
-    private static final Map<String, SqlSessionFactory> datasourceCache = new HashMap<>();
+    private static final Map<String, JdbcTemplate> datasourceCache = new HashMap<>();
 
     static {
         databaseDriverMap.put(DataBaseEnum.MySQL, "com.mysql.jdbc.Driver");
@@ -25,7 +21,7 @@ public class DataBaseExecuteFactory {
         databaseDriverMap.put(DataBaseEnum.PostgresSQL, "org.postgresql.Driver");
     }
 
-    public static SqlSessionFactory buildDataSource(DatasourceEntity datasourceEntity) {
+    public static JdbcTemplate buildDataSource(DatasourceEntity datasourceEntity) {
         String key = datasourceEntity.getUrl() + "_" + datasourceEntity.getUsername() + "_" + datasourceEntity.getPassword();
         if (datasourceCache.containsKey(key))
             return datasourceCache.get(key);
@@ -45,11 +41,13 @@ public class DataBaseExecuteFactory {
         // 设置获取连接出错时的自动重连次数
         dataSource.setConnectionErrorRetryAttempts(3);
 
-        Environment environment = new Environment(key, new JdbcTransactionFactory(), dataSource);
-        Configuration configuration = new Configuration(environment);
-        configuration.addMapper(DataBaselMapper.class);
-        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
-        datasourceCache.put(key, sqlSessionFactory);
-        return sqlSessionFactory;
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        datasourceCache.put(key, jdbcTemplate);
+        return jdbcTemplate;
+    }
+
+    public static void removeDatasourceCache(DatasourceEntity datasourceEntity) {
+        String key = datasourceEntity.getUrl() + "_" + datasourceEntity.getUsername() + "_" + datasourceEntity.getPassword();
+        datasourceCache.remove(key);
     }
 }

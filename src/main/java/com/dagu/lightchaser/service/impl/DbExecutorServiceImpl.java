@@ -3,25 +3,22 @@ package com.dagu.lightchaser.service.impl;
 import com.dagu.lightchaser.entity.DatasourceEntity;
 import com.dagu.lightchaser.entity.DbExecutorEntity;
 import com.dagu.lightchaser.executor.DataBaseExecuteFactory;
-import com.dagu.lightchaser.executor.DataBaselMapper;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.service.DatasourceService;
 import com.dagu.lightchaser.service.DbExecutorService;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
+import com.dagu.lightchaser.util.Base64Util;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 @Service
 public class DbExecutorServiceImpl implements DbExecutorService {
-
-    private static final Logger logger = LoggerFactory.getLogger(DbExecutorServiceImpl.class);
 
     @Autowired
     private DatasourceService datasourceService;
@@ -29,24 +26,23 @@ public class DbExecutorServiceImpl implements DbExecutorService {
     @Override
     public Object executeSql(DbExecutorEntity dbExecutorEntity) {
         if (dbExecutorEntity == null)
-            throw new AppException(500, "sql执行错误，请检查SQL语句");
-        String sql = dbExecutorEntity.getSql();
-        if (sql == null || !sql.trim().startsWith("select"))
-            throw new AppException(500, "sql不能为空,且必须以select开头");
+            throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQL execution is incorrect, check the SQL syntax");
+        String sql = Base64Util.decode(dbExecutorEntity.getSql());
+        if (!sql.trim().toLowerCase().startsWith("select"))
+            throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQL cannot be empty and must start with select");
         DatasourceEntity dataSourceEntity = datasourceService.getDataSource(dbExecutorEntity.getId());
         if (dataSourceEntity == null)
-            throw new AppException(500, "数据源不存在");
-
-        SqlSessionFactory sqlSessionFactory = DataBaseExecuteFactory.buildDataSource(dataSourceEntity);
-        try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-            List<Map<String, Object>> res = sqlSession.getMapper(DataBaselMapper.class).executeQuery(sql);
-            logger.info("SQL执行成功,SQL: {}, 结果为: {}", sql, res);
+            throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "The data source does not exist");
+        JdbcTemplate jdbcTemplate = DataBaseExecuteFactory.buildDataSource(dataSourceEntity);
+        try {
+            List<Map<String, Object>> res = jdbcTemplate.queryForList(sql);
             if (res.size() == 1)
                 return res.get(0);
             return res;
         } catch (Exception e) {
-            logger.error("SQL执行错误, 请检查SQL语法", e);
-            throw new AppException(500, "SQL执行错误, 请检查SQL语法");
+            log.error("execute sql error, please check sql syntax, sql:{}", sql, e);
+            DataBaseExecuteFactory.removeDatasourceCache(dataSourceEntity);
+            throw new AppException(500, "SQL execution is incorrect, check the SQL syntax");
         }
     }
 }
