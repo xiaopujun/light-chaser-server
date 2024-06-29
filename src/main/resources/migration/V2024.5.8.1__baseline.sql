@@ -1,7 +1,3 @@
-# create database light_chaser_server default character set utf8mb4 collate utf8mb4_general_ci;
-
-drop table if exists datasource;
-
 create table datasource
 (
     id          bigint auto_increment comment 'id'
@@ -9,7 +5,7 @@ create table datasource
     name        varchar(255)                        null comment '数据源链接名称',
     type        int                                 not null comment '数据源类型',
     username    varchar(20)                         not null comment '用户名',
-    password    varchar(20)                         not null comment '数据源链接密码',
+    password    varchar(255)                        not null comment '数据源链接密码',
     url         varchar(255)                        not null comment '数据源链接地址',
     des         varchar(255)                        null comment '数据源链接描述',
     deleted     int                                 not null comment '是否删除',
@@ -18,7 +14,6 @@ create table datasource
 )
     comment '数据源管理';
 
-drop table if exists file;
 create table file
 (
     id          bigint auto_increment comment '主键'
@@ -33,7 +28,6 @@ create table file
     hash        varchar(255)                       null comment '图片hash'
 );
 
-drop table if exists project;
 create table project
 (
     id          bigint auto_increment comment '主键'
