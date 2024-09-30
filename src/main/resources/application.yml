@@ -30,7 +30,7 @@ light-chaser:
   migration: # 是否自动跑sql脚本
     enable: true
 
-#logging:
-#  config: classpath:log4j2-spring.xml
-#  level:
-#    cn.jay.repository: trace
+logging:
+  config: classpath:log4j2-spring.xml
+  level:
+    cn.jay.repository: info
