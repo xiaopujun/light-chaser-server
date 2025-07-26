@@ -1,11 +1,16 @@
 spring:
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/light_chaser_server_open?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
-      username: root
-      password: root
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:./data/light_chaser_server.db
+    username: 
+    password: 
+    # 使用HikariCP连接池
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
 
 
 
@@ -24,11 +29,11 @@ mybatis-plus:
 
 
 light-chaser:
-  project-resource-path: /D:/project/light-chaser-server # 项目资源路径
+  project-resource-path: ./data/resources # 项目资源路径
   source-image-path: /static/images/ # 源图片路径
   cover-path: /static/covers/ # 封面路径
   migration: # 是否自动跑sql脚本
-    enable: false
+    enable: true
 
 #logging:
 #  config: classpath:log4j2-spring.xml

@@ -55,35 +55,35 @@ public class DatabaseMigration {
 
     private static final TreeSet<Migration> allMigrations = new TreeSet<>();
 
-    private static final String TABLE_CREATE_SQL = "CREATE TABLE `migration_history`  (" +
-            "  `id` varchar(32) NOT NULL," +
-            "  `version` varchar(128) NOT NULL," +
-            "  `file_name` varchar(255) NOT NULL," +
-            "  `execute_user` varchar(128) NOT NULL," +
-            "  `execute_date` timestamp NOT NULL," +
-            "  `success` tinyint(1) NOT NULL," +
-            "  PRIMARY KEY (`id`)" +
+    private static final String TABLE_CREATE_SQL = "CREATE TABLE migration_history (" +
+            "  id varchar(32) NOT NULL," +
+            "  version varchar(128) NOT NULL," +
+            "  file_name varchar(255) NOT NULL," +
+            "  execute_user varchar(128) NOT NULL," +
+            "  execute_date datetime NOT NULL," +
+            "  success integer NOT NULL," +
+            "  PRIMARY KEY (id)" +
             ");";
 
-    private static final String HISTORY_TRANSFER_SQL = "INSERT INTO migration_history ( `id`, `version`, `file_name`, `execute_user`, `execute_date`, `success` ) SELECT " +
-            "`version`," +
-            "`description`," +
-            "`script`," +
-            "`installed_by`," +
-            "`installed_on`," +
-            "`success` " +
+    private static final String HISTORY_TRANSFER_SQL = "INSERT INTO migration_history ( id, version, file_name, execute_user, execute_date, success ) SELECT " +
+            "version," +
+            "description," +
+            "script," +
+            "installed_by," +
+            "installed_on," +
+            "success " +
             "FROM " +
             "flyway_schema_history";
 
-    private static final String DROP_OLD_TABLE_SQL = "DROP TABLE IF EXISTS `flyway_schema_history`";
+    private static final String DROP_OLD_TABLE_SQL = "DROP TABLE IF EXISTS flyway_schema_history";
 
-    @Value("${spring.datasource.druid.url}")
+    @Value("${spring.datasource.url}")
     private String url;
 
-    @Value("${spring.datasource.druid.username}")
+    @Value("${spring.datasource.username}")
     private String username;
 
-    @Value("${spring.datasource.druid.password}")
+    @Value("${spring.datasource.password}")
     private String password;
 
     private final JdbcTemplate jdbcTemplate;
@@ -174,7 +174,7 @@ public class DatabaseMigration {
     }
 
     private boolean doBaseLine(Migration baseline) throws SQLException {
-        List<String> tables = jdbcTemplate.queryForList("SHOW TABLES", String.class);
+        List<String> tables = jdbcTemplate.queryForList("SELECT name FROM sqlite_master WHERE type='table'", String.class);
         tables.remove(MIGRATION_TABLE_NAME);
         if (!CollectionUtils.isEmpty(tables)) {
 //            log.info("Do baseline on an non-empty database...");
@@ -190,7 +190,7 @@ public class DatabaseMigration {
     }
 
     private void prepareMigrationTable() {
-        List<String> tables = jdbcTemplate.queryForList("SHOW TABLES", String.class);
+        List<String> tables = jdbcTemplate.queryForList("SELECT name FROM sqlite_master WHERE type='table'", String.class);
         if (!tables.contains(MIGRATION_TABLE_NAME)) {
             jdbcTemplate.execute(TABLE_CREATE_SQL);
         }
@@ -241,14 +241,14 @@ public class DatabaseMigration {
     private void upsertMigration(Migration migration) throws SQLException {
         SQL query = new SQL();
         query.SELECT("*").FROM(MIGRATION_TABLE_NAME)
-                .WHERE("`id` = '" + migration.getId() + "'");
+                .WHERE("id = '" + migration.getId() + "'");
         List<Migration> migrations = jdbcTemplate.query(query.toString(), new BeanPropertyRowMapper<>(Migration.class));
         SQL sql = new SQL();
         if (!CollectionUtils.isEmpty(migrations) && !migrations.get(0).isSuccess()) {
             sql.UPDATE(MIGRATION_TABLE_NAME)
                     .SET("success = " + String.format("'%s'", (migration.isSuccess() ? "1" : "0"))
                             , "execute_date = " + String.format("'%s'", DateFormatUtils.format(new Date(), Const.DEFAULT_DATE_FORMAT)))
-                    .WHERE("`id` = " + String.format("'%s'", migration.getId()));
+                    .WHERE("id = " + String.format("'%s'", migration.getId()));
         } else {
             sql.INSERT_INTO(MIGRATION_TABLE_NAME)
                     .INTO_VALUES(String.format("'%s'", migration.getId())
