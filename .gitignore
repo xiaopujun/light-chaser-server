@@ -35,4 +35,5 @@ build/
 /src/main/resources/rebel.xml
 logs
 CLAUDE.md
+data/
 
