@@ -1,3 +1,7 @@
+CREATE DATABASE light_chaser_server_open CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE light_chaser_server_open;
+
 create table datasource
 (
     id          bigint auto_increment comment 'id'
