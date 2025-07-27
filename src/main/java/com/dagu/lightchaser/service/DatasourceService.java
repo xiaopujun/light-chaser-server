@@ -1,6 +1,8 @@
 package com.dagu.lightchaser.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dagu.lightchaser.dto.DatasourceAddRequest;
+import com.dagu.lightchaser.dto.DatasourceUpdateRequest;
 import com.dagu.lightchaser.entity.DatasourceEntity;
 import com.dagu.lightchaser.entity.PageParamEntity;
 
@@ -16,8 +18,10 @@ public interface DatasourceService {
     List<DatasourceEntity> getDataSourceList();
 
     Long addDataSource(DatasourceEntity datasource);
+    
+    Long addDataSource(DatasourceAddRequest request);
 
-    Boolean updateDataSource(DatasourceEntity datasource);
+    Boolean updateDataSource(DatasourceUpdateRequest datasource) throws Exception;
 
     DatasourceEntity getDataSource(Long id);
 

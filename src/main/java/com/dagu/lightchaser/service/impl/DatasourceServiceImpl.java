@@ -1,14 +1,19 @@
 package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dagu.lightchaser.config.CryptoConfig;
 import com.dagu.lightchaser.constants.DataBaseEnum;
+import com.dagu.lightchaser.dto.DatasourceAddRequest;
+import com.dagu.lightchaser.dto.DatasourceUpdateRequest;
 import com.dagu.lightchaser.entity.DatasourceEntity;
 import com.dagu.lightchaser.entity.PageParamEntity;
 import com.dagu.lightchaser.executor.DataBaseExecuteFactory;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.mapper.DatasourceMapper;
 import com.dagu.lightchaser.service.DatasourceService;
+import com.dagu.lightchaser.util.CryptoUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +37,9 @@ public class DatasourceServiceImpl implements DatasourceService {
     @Autowired
     private DatasourceMapper datasourceMapper;
 
+    @Autowired
+    private CryptoConfig cryptoConfig;
+
 
     @Override
     public List<DatasourceEntity> getDataSourceList() {
@@ -50,11 +58,57 @@ public class DatasourceServiceImpl implements DatasourceService {
     }
 
     @Override
-    public Boolean updateDataSource(DatasourceEntity datasource) {
+    public Long addDataSource(DatasourceAddRequest request) {
+        try {
+            String encryptedPassword = getEncryptedPassword(request.getPassword(), request.getAesKey());
+
+            // 5. 创建DatasourceEntity并保存
+            DatasourceEntity datasource = new DatasourceEntity();
+            datasource.setName(request.getName());
+            datasource.setType(request.getType());
+            datasource.setUsername(request.getUsername());
+            datasource.setPassword(encryptedPassword);
+            datasource.setUrl(request.getUrl());
+            datasource.setCreateTime(LocalDateTime.now());
+
+            datasourceMapper.insert(datasource);
+            return datasource.getId();
+        } catch (Exception e) {
+            logger.error("Failed to add datasource with encryption: ", e);
+            throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "数据源添加失败: " + e.getMessage());
+        }
+    }
+
+    private String getEncryptedPassword(String password,String aesKey) throws Exception {
+        // 1. 从配置文件读取RSA私钥（CryptoConfig已经处理过格式）
+        String privateKeyString = cryptoConfig.getRsa().getPrivateKey();
+
+        // 2. 使用RSA私钥解密password（password是RSA加密后的AES加密密码）
+        String encryptedPasswordByAES = CryptoUtil.decryptByRSAPrivateKey(password, privateKeyString);
+
+        // 3. 使用前端AES密钥解密password（支持IV:密文格式，aesKey是明文）
+        String realPassword = CryptoUtil.decryptByAESWithIV(encryptedPasswordByAES, aesKey);
+
+        // 4. 使用后端AES密钥加密password
+        return CryptoUtil.encryptByAES(realPassword, cryptoConfig.getAes().getKey());
+    }
+
+    @Override
+    public Boolean updateDataSource(DatasourceUpdateRequest datasource) throws Exception {
         if (datasource.getId() == null)
             return false;
-        datasource.setUpdateTime(LocalDateTime.now());
-        return datasourceMapper.updateById(datasource) > 0;
+
+        String encryptedPassword = getEncryptedPassword(datasource.getPassword(), datasource.getAesKey());
+
+        return datasourceMapper.update(new LambdaUpdateWrapper<DatasourceEntity>()
+                .eq(DatasourceEntity::getId, datasource.getId())
+                .set(DatasourceEntity::getName, datasource.getName())
+                .set(DatasourceEntity::getUsername, datasource.getUsername())
+                .set(DatasourceEntity::getPassword, encryptedPassword)
+                .set(DatasourceEntity::getType, datasource.getType())
+                .set(DatasourceEntity::getUrl, datasource.getUrl())
+                .set(DatasourceEntity::getUpdateTime, LocalDateTime.now())
+        ) > 0;
     }
 
     @Override
@@ -100,39 +154,40 @@ public class DatasourceServiceImpl implements DatasourceService {
             logger.warn("数据源ID为空，无法进行连接测试");
             return false;
         }
-        
+
         DatasourceEntity datasource = getDataSource(id);
         if (datasource == null) {
             logger.warn("未找到ID为{}的数据源", id);
             return false;
         }
-        
+
         try {
             logger.info("开始测试数据源连接: {} ({})", datasource.getName(), datasource.getType());
-            
+
+            datasource.setPassword(CryptoUtil.decryptByAESWithIV2(datasource.getPassword(), cryptoConfig.getAes().getKey()));
             // 构建数据源连接（已包含连接测试）
             JdbcTemplate jdbcTemplate = DataBaseExecuteFactory.buildDataSource(datasource);
-            
+
             // 执行特定的测试查询
             String testSql = getTestSqlByType(datasource.getType());
             jdbcTemplate.queryForObject(testSql, Integer.class);
-            
+
             logger.info("数据源连接测试成功: {} ({})", datasource.getName(), datasource.getType());
             return true;
-            
+
         } catch (Exception exception) {
-            logger.error("数据源连接测试失败: {} ({}), 错误信息: {}", 
-                       datasource.getName(), datasource.getType(), exception.getMessage(), exception);
-            
+            logger.error("数据源连接测试失败: {} ({}), 错误信息: {}",
+                    datasource.getName(), datasource.getType(), exception.getMessage(), exception);
+
             // 移除缓存的失败连接
             DataBaseExecuteFactory.removeDatasourceCache(datasource);
-            
+
             // 抛出友好的错误信息
             String errorMessage = buildUserFriendlyErrorMessage(datasource.getType(), exception);
             throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
         }
     }
-    
+
     /**
      * 根据数据库类型获取测试SQL
      *
@@ -152,18 +207,18 @@ public class DatasourceServiceImpl implements DatasourceService {
                 return "SELECT 1";
         }
     }
-    
+
     /**
      * 构建用户友好的错误信息
      *
-     * @param dbType 数据库类型
+     * @param dbType    数据库类型
      * @param exception 异常信息
      * @return 友好的错误信息
      */
     private String buildUserFriendlyErrorMessage(DataBaseEnum dbType, Exception exception) {
         String message = exception.getMessage();
         String dbTypeName = dbType.getName();
-        
+
         // 常见错误的友好提示
         if (message.contains("Connection refused") || message.contains("No route to host")) {
             return String.format("%s数据库连接被拒绝，请检查数据库服务是否启动以及网络连接", dbTypeName);

@@ -1,6 +1,8 @@
 package com.dagu.lightchaser.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dagu.lightchaser.dto.DatasourceAddRequest;
+import com.dagu.lightchaser.dto.DatasourceUpdateRequest;
 import com.dagu.lightchaser.entity.DatasourceEntity;
 import com.dagu.lightchaser.entity.PageParamEntity;
 import com.dagu.lightchaser.global.ApiResponse;
@@ -8,6 +10,7 @@ import com.dagu.lightchaser.service.DatasourceService;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 
 @RestController
@@ -33,12 +36,12 @@ public class DataSourceController {
     }
 
     @PostMapping("/add")
-    public ApiResponse<Long> addDataSource(@RequestBody DatasourceEntity datasource) {
-        return ApiResponse.success(datasourceService.addDataSource(datasource));
+    public ApiResponse<Long> addDataSource(@RequestBody DatasourceAddRequest request) {
+        return ApiResponse.success(datasourceService.addDataSource(request));
     }
 
     @PostMapping("/update")
-    public ApiResponse<Boolean> updateDataSource(@RequestBody DatasourceEntity datasource) {
+    public ApiResponse<Boolean> updateDataSource(@RequestBody DatasourceUpdateRequest datasource) throws Exception {
         return ApiResponse.success(datasourceService.updateDataSource(datasource));
     }
 
