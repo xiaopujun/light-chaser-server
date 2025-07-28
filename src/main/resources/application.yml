@@ -34,6 +34,13 @@ light-chaser:
   cover-path: /static/covers/ # 封面路径
   migration: # 是否自动跑sql脚本
     enable: true
+  crypto:
+    rsa:
+      public-key-path: keys/public_key.pem # RSA公钥文件路径
+      private-key-path: keys/private_key.pem # RSA私钥文件路径
+    aes:
+      key: YmVVaTJUNGdvV3huQnZXZzlEUE9kdnBaaS9ZcTZ0UzZtWXl2TWVXTzQ0Qz0=
+
 
 #logging:
 #  config: classpath:log4j2-spring.xml
