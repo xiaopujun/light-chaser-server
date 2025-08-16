@@ -7,10 +7,11 @@ import lombok.Getter;
 
 @Getter
 public enum DataBaseEnum {
-    MySQL(0, "MySQL"),
-    PostgresSQL(1, "PostgresSQL"),
-    ORACLE(2, "ORACLE"),
-    SQLServer(3, "SQLServer"),
+    SQLite(0, "SQLite"),
+    MySQL(1, "MySQL"),
+    PostgresSQL(2, "PostgresSQL"),
+    ORACLE(3, "ORACLE"),
+    SQLServer(4, "SQLServer"),
     ;
 
     @JsonValue
