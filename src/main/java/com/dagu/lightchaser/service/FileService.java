@@ -1,6 +1,6 @@
 package com.dagu.lightchaser.service;
 
-import com.dagu.lightchaser.entity.FileEntity;
+import com.dagu.lightchaser.model.entity.FileEntity;
 
 import java.util.List;
 

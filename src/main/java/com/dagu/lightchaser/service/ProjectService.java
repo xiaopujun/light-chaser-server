@@ -1,10 +1,8 @@
 package com.dagu.lightchaser.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dagu.lightchaser.entity.PageParamEntity;
-import com.dagu.lightchaser.entity.ProjectEntity;
-
-import java.util.List;
+import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.entity.ProjectEntity;
 
 public interface ProjectService {
     Boolean updateProject(ProjectEntity project);

@@ -2,8 +2,8 @@ package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dagu.lightchaser.entity.PageParamEntity;
-import com.dagu.lightchaser.entity.ProjectEntity;
+import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.entity.ProjectEntity;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalVariables;
 import com.dagu.lightchaser.mapper.ProjectMapper;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -138,6 +139,7 @@ public class ProjectServiceImpl implements ProjectService {
         Page<ProjectEntity> page = new Page<>(current, size);
         LambdaQueryWrapper<ProjectEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(ProjectEntity::getId, ProjectEntity::getName, ProjectEntity::getDes, ProjectEntity::getCover);
+        wrapper.orderByDesc(ProjectEntity::getCreateTime);
         if (pageParam.getSearchValue() != null)
             wrapper.like(ProjectEntity::getName, pageParam.getSearchValue());
         Page<ProjectEntity> pageData = projectMapper.selectPage(page, wrapper);

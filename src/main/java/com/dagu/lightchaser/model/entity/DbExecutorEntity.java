@@ -1,4 +1,4 @@
-package com.dagu.lightchaser.entity;
+package com.dagu.lightchaser.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

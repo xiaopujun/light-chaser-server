@@ -1,6 +1,6 @@
 package com.dagu.lightchaser.mapper;
 
-import com.dagu.lightchaser.entity.DatasourceEntity;
+import com.dagu.lightchaser.model.entity.DatasourceEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

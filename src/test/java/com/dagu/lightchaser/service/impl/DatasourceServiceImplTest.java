@@ -1,9 +1,9 @@
 package com.dagu.lightchaser.service.impl;
 
 import com.dagu.lightchaser.config.CryptoConfig;
-import com.dagu.lightchaser.constants.DataBaseEnum;
-import com.dagu.lightchaser.dto.DatasourceAddRequest;
-import com.dagu.lightchaser.entity.DatasourceEntity;
+import com.dagu.lightchaser.model.constants.DataBaseEnum;
+import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
+import com.dagu.lightchaser.model.entity.DatasourceEntity;
 import com.dagu.lightchaser.mapper.DatasourceMapper;
 import com.dagu.lightchaser.util.CryptoUtil;
 import org.junit.jupiter.api.BeforeEach;

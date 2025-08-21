@@ -2,8 +2,8 @@ package com.dagu.lightchaser.executor;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import com.dagu.lightchaser.constants.DataBaseEnum;
-import com.dagu.lightchaser.entity.DatasourceEntity;
+import com.dagu.lightchaser.model.constants.DataBaseEnum;
+import com.dagu.lightchaser.model.entity.DatasourceEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;

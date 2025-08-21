@@ -22,6 +22,7 @@ package com.dagu.lightchaser.core.migration;
 import com.dagu.lightchaser.core.base.consts.Const;
 import de.vandermeer.asciitable.AT_Context;
 import de.vandermeer.asciitable.AsciiTable;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.ibatis.jdbc.SQL;
 import org.apache.ibatis.jdbc.ScriptRunner;
@@ -44,6 +45,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Component
 public class DatabaseMigration {
 
@@ -56,24 +58,24 @@ public class DatabaseMigration {
     private static final TreeSet<Migration> allMigrations = new TreeSet<>();
 
     private static final String TABLE_CREATE_SQL = "CREATE TABLE migration_history (" +
-            "  id varchar(32) NOT NULL," +
-            "  version varchar(128) NOT NULL," +
-            "  file_name varchar(255) NOT NULL," +
-            "  execute_user varchar(128) NOT NULL," +
-            "  execute_date datetime NOT NULL," +
-            "  success integer NOT NULL," +
-            "  PRIMARY KEY (id)" +
-            ");";
+                                                   "  id varchar(32) NOT NULL," +
+                                                   "  version varchar(128) NOT NULL," +
+                                                   "  file_name varchar(255) NOT NULL," +
+                                                   "  execute_user varchar(128) NOT NULL," +
+                                                   "  execute_date datetime NOT NULL," +
+                                                   "  success integer NOT NULL," +
+                                                   "  PRIMARY KEY (id)" +
+                                                   ");";
 
     private static final String HISTORY_TRANSFER_SQL = "INSERT INTO migration_history ( id, version, file_name, execute_user, execute_date, success ) SELECT " +
-            "version," +
-            "description," +
-            "script," +
-            "installed_by," +
-            "installed_on," +
-            "success " +
-            "FROM " +
-            "flyway_schema_history";
+                                                       "version," +
+                                                       "description," +
+                                                       "script," +
+                                                       "installed_by," +
+                                                       "installed_on," +
+                                                       "success " +
+                                                       "FROM " +
+                                                       "flyway_schema_history";
 
     private static final String DROP_OLD_TABLE_SQL = "DROP TABLE IF EXISTS flyway_schema_history";
 
@@ -97,7 +99,7 @@ public class DatabaseMigration {
         Set<Migration> migrations = getMigrations();
         if (CollectionUtils.isEmpty(migrations)) {
             printCurrentVersion();
-//            log.info("No migration required , current database version is " + getAllMigrations().last().getVersion());
+            log.info("No migration required , current database version is " + getAllMigrations().last().getVersion());
             return;
         }
         RuntimeException exception = doMigrations((TreeSet<Migration>) migrations);
@@ -126,30 +128,42 @@ public class DatabaseMigration {
         return migrationsToDo;
     }
 
-    private RuntimeException doMigrations(TreeSet<Migration> migrations) throws IOException, SQLException, ClassNotFoundException {
+    private RuntimeException doMigrations(TreeSet<Migration> migrations) throws SQLException {
+        if (migrations == null || migrations.isEmpty()) {
+            log.info("No migrations to run.");
+            return null;
+        }
+
+        String lastOkVersion = null;
+
         Migration first = migrations.first();
         if (BASELINE.equalsIgnoreCase(first.getVersion())) {
-//            log.info("The database has no version management , performs an baseline migration");
-            if (!doBaseLine(first)) {
+            log.info("The database has no version management , performs a baseline migration");
+            if (!doBaseLine(first))
                 return new RuntimeException("Baseline migration failed! ");
-            }
             migrations.remove(first);
+            lastOkVersion = BASELINE;
         }
+
         for (Migration migration : migrations) {
-//            log.info("start migration, version: " + migration.getVersion());
+            log.info("start migration, version: " + migration.getVersion());
             migration.setExecuteUser(username);
             migration.setExecuteDate(new Date());
             migration.setSuccess(doMigration(migration));
             upsertMigration(migration);
             if (!migration.isSuccess()) {
-                return new RuntimeException("Migration break at version  " + migration.getVersion());
+                return new RuntimeException("Migration break at version " + migration.getVersion());
             } else {
-//                log.info("Migration success! version: " + migration.getVersion());
+                lastOkVersion = migration.getVersion(); // ✅ 记录最后成功版本
+                log.info("Migration success! version: " + migration.getVersion());
             }
         }
-//        log.info("The migration is complete , The latest database version is " + migrations.last().getVersion());
+
+        if (lastOkVersion != null)
+            log.info("The migration is complete , The latest database version is " + lastOkVersion);
         return null;
     }
+
 
     private boolean doMigration(Migration migration) {
         try {
@@ -158,13 +172,13 @@ public class DatabaseMigration {
             if (success) {
                 return success;
             }
-//            log.error("Migration failure! version: " + migration.getVersion() + ". A rollback is about to be performed");
+            log.error("Migration failure! version: " + migration.getVersion() + ". A rollback is about to be performed");
             Resource rollbackFile = migration.getRollbackFile();
             if (rollbackFile != null) {
                 runScript(rollbackFile, false);
-//                log.info("The rollback script (" + rollbackFile.getFilename() + ") is successfully executed");
+                log.info("The rollback script (" + rollbackFile.getFilename() + ") is successfully executed");
             } else {
-//                log.warn("The rollback script does not exist. Skip execution");
+                log.warn("The rollback script does not exist. Skip execution");
             }
             return false;
         } catch (Exception e) {
@@ -177,10 +191,10 @@ public class DatabaseMigration {
         List<String> tables = jdbcTemplate.queryForList("SELECT name FROM sqlite_master WHERE type='table'", String.class);
         tables.remove(MIGRATION_TABLE_NAME);
         if (!CollectionUtils.isEmpty(tables)) {
-//            log.info("Do baseline on an non-empty database...");
+            log.info("Do baseline on an non-empty database...");
             baseline.setSuccess(true);
         } else {
-//            log.info("Do baseline on an empty database...");
+            log.info("Do baseline on an empty database...");
             baseline.setSuccess(runScript(baseline.getUpgradeFile(), true));
         }
         baseline.setExecuteUser(username);
@@ -199,7 +213,7 @@ public class DatabaseMigration {
                 jdbcTemplate.execute(HISTORY_TRANSFER_SQL);
                 jdbcTemplate.execute(DROP_OLD_TABLE_SQL);
             } catch (Exception e) {
-//                log.warn("Migration history transfer error : " + e.getMessage());
+                log.warn("Migration history transfer error : " + e.getMessage());
             }
         }
     }
@@ -210,8 +224,8 @@ public class DatabaseMigration {
                 // load migration files
                 PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
-//                db/migration/
-// 使用资源模式匹配器获取资源列表
+                //db/migration/
+                // 使用资源模式匹配器获取资源列表
                 Resource[] resources = resolver.getResources(ResourceUtils.CLASSPATH_URL_PREFIX + "migration/*.sql");
                 Map<String, List<Resource>> resourceMap = Arrays.stream(resources)
                         .filter(Migration::isMigrationFile)
@@ -275,7 +289,7 @@ public class DatabaseMigration {
             scriptRunner.runScript(new InputStreamReader(resource.getInputStream()));
             return true;
         } catch (Exception e) {
-//            log.error("Script execute failed! " + resource.getFilename());
+            log.error("Script execute failed! " + resource.getFilename());
             return false;
         }
     }

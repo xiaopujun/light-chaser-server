@@ -1,33 +1,29 @@
-package com.dagu.lightchaser.entity;
+package com.dagu.lightchaser.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.dagu.lightchaser.constants.FileTypeEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("file")
+@TableName("project")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FileEntity {
+public class ProjectEntity implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableId(type = IdType.AUTO)
     private Long id;
-    /**
-     * 图片路径，数据库仅存储路径片段，完整路径需要读取数据库片段后结合配置完整拼接后得出
-     */
-    private String url;
     private String name;
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private FileTypeEnum type;
+    private String des;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
     @TableLogic
     private int deleted;
-    private Long projectId;
-    private String hash;
+    private String dataJson;
+    private String cover;
     @TableField(exist = false)
     private MultipartFile file;
 }

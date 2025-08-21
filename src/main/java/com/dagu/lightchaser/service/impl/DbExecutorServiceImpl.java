@@ -1,7 +1,7 @@
 package com.dagu.lightchaser.service.impl;
 
-import com.dagu.lightchaser.entity.DatasourceEntity;
-import com.dagu.lightchaser.entity.DbExecutorEntity;
+import com.dagu.lightchaser.model.entity.DatasourceEntity;
+import com.dagu.lightchaser.model.entity.DbExecutorEntity;
 import com.dagu.lightchaser.executor.DataBaseExecuteFactory;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.service.DatasourceService;

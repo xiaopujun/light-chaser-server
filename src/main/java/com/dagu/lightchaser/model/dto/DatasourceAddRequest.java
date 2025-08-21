@@ -1,6 +1,6 @@
-package com.dagu.lightchaser.dto;
+package com.dagu.lightchaser.model.dto;
 
-import com.dagu.lightchaser.constants.DataBaseEnum;
+import com.dagu.lightchaser.model.constants.DataBaseEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 

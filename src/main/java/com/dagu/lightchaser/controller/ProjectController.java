@@ -1,18 +1,18 @@
 package com.dagu.lightchaser.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dagu.lightchaser.entity.PageParamEntity;
-import com.dagu.lightchaser.entity.ProjectEntity;
+import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.entity.ProjectEntity;
 import com.dagu.lightchaser.global.ApiResponse;
 import com.dagu.lightchaser.service.ProjectService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/project")
+@RequiredArgsConstructor
 public class ProjectController {
-    @Autowired
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
     @PostMapping("/pageList")
     public ApiResponse<Page<ProjectEntity>> getProjectPageList(@RequestBody PageParamEntity pageParam) {

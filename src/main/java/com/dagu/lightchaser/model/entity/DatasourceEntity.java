@@ -1,7 +1,7 @@
-package com.dagu.lightchaser.entity;
+package com.dagu.lightchaser.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.dagu.lightchaser.constants.DataBaseEnum;
+import com.dagu.lightchaser.model.constants.DataBaseEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

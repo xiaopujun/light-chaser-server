@@ -3,7 +3,7 @@ package com.dagu.lightchaser.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dagu.lightchaser.mapper.FileMapper;
-import com.dagu.lightchaser.entity.FileEntity;
+import com.dagu.lightchaser.model.entity.FileEntity;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalVariables;
 import com.dagu.lightchaser.service.FileService;

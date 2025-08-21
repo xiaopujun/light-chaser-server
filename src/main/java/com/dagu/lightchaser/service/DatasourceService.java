@@ -1,10 +1,10 @@
 package com.dagu.lightchaser.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dagu.lightchaser.dto.DatasourceAddRequest;
-import com.dagu.lightchaser.dto.DatasourceUpdateRequest;
-import com.dagu.lightchaser.entity.DatasourceEntity;
-import com.dagu.lightchaser.entity.PageParamEntity;
+import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
+import com.dagu.lightchaser.model.dto.DatasourceUpdateRequest;
+import com.dagu.lightchaser.model.entity.DatasourceEntity;
+import com.dagu.lightchaser.model.entity.PageParamEntity;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.dagu.lightchaser.controller;
 
-import com.dagu.lightchaser.entity.FileEntity;
+import com.dagu.lightchaser.model.entity.FileEntity;
 import com.dagu.lightchaser.global.ApiResponse;
 import com.dagu.lightchaser.service.FileService;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,6 @@
 package com.dagu.lightchaser.factory;
 
-import com.dagu.lightchaser.constants.BaseWebParamEnum;
+import com.dagu.lightchaser.model.constants.BaseWebParamEnum;
 import com.dagu.lightchaser.converter.WebParamEnumConverter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;

@@ -1,4 +1,4 @@
-package com.dagu.lightchaser.constants;
+package com.dagu.lightchaser.model.constants;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonFormat;
