@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
  * @author zhenglin
  * @date 2025/07/27
  */
-public class DatasourceServiceDecryptionTest {
+public class CommonDatasourceServiceDecryptionTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(DatasourceServiceDecryptionTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommonDatasourceServiceDecryptionTest.class);
 
     /**
      * 测试完整的加密解密流程

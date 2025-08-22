@@ -1,9 +1,11 @@
 package com.dagu.lightchaser.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.dagu.lightchaser.model.dto.CommonDatasourceDTO;
 import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
 import com.dagu.lightchaser.model.dto.DatasourceUpdateRequest;
-import com.dagu.lightchaser.model.entity.DatasourceEntity;
+import com.dagu.lightchaser.model.po.CommonDatasourcePO;
 import com.dagu.lightchaser.model.entity.PageParamEntity;
 
 import java.util.List;
@@ -13,17 +15,17 @@ import java.util.List;
  * @description 针对表【datasource(数据源管理)】的数据库操作Service
  * @createDate 2024-04-12 11:07:34
  */
-public interface DatasourceService {
+public interface CommonDatasourceService extends IService<CommonDatasourcePO> {
 
-    List<DatasourceEntity> getDataSourceList();
+    List<CommonDatasourceDTO> getDataSourceList();
 
-    Long addDataSource(DatasourceEntity datasource);
-    
+    Long addDataSource(CommonDatasourceDTO datasource);
+
     Long addDataSource(DatasourceAddRequest request);
 
     Boolean updateDataSource(DatasourceUpdateRequest datasource) throws Exception;
 
-    DatasourceEntity getDataSource(Long id);
+    CommonDatasourceDTO getDataSource(Long id);
 
     Boolean copyDataSource(Long id);
 
@@ -31,5 +33,5 @@ public interface DatasourceService {
 
     Boolean testDataSourceConnect(Long id);
 
-    Page<DatasourceEntity> getDataSourcePageList(PageParamEntity pageParam);
+    Page<CommonDatasourceDTO> getDataSourcePageList(PageParamEntity pageParam);
 }

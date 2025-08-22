@@ -2,28 +2,30 @@ package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dagu.lightchaser.global.AppException;
+import com.dagu.lightchaser.global.GlobalProperties;
+import com.dagu.lightchaser.mapper.ProjectMapper;
 import com.dagu.lightchaser.model.entity.PageParamEntity;
 import com.dagu.lightchaser.model.entity.ProjectEntity;
-import com.dagu.lightchaser.global.AppException;
-import com.dagu.lightchaser.global.GlobalVariables;
-import com.dagu.lightchaser.mapper.ProjectMapper;
 import com.dagu.lightchaser.service.ProjectService;
+import com.dagu.lightchaser.util.PathUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
 
-    @Autowired
-    private ProjectMapper projectMapper;
+    private final ProjectMapper projectMapper;
+    private final GlobalProperties globalProperties;
 
     @Override
     public Boolean updateProject(ProjectEntity project) {
@@ -85,21 +87,20 @@ public class ProjectServiceImpl implements ProjectService {
         if (project == null || project.getId() == null || project.getFile() == null)
             throw new AppException(500, "参数错误");
         MultipartFile file = project.getFile();
-        if (file.getSize() > GlobalVariables.IMAGE_SIZE)
+        if (file.getSize() > GlobalProperties.IMAGE_SIZE)
             throw new AppException(500, "图片大小不能超过5M");
         String fileName = file.getOriginalFilename();
         if (fileName == null)
             throw new AppException(500, "图片名称错误");
         String suffix = fileName.substring(fileName.lastIndexOf("."));
-        if (!Arrays.asList(GlobalVariables.IMAGE_TYPE).contains(suffix))
+        if (!Arrays.asList(GlobalProperties.IMAGE_TYPE).contains(suffix))
             throw new AppException(500, "图片格式不支持");
         LambdaQueryWrapper<ProjectEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProjectEntity::getId, project.getId())
-                .eq(ProjectEntity::getDeleted, 0);
+        queryWrapper.eq(ProjectEntity::getId, project.getId());
         ProjectEntity record = projectMapper.selectOne(queryWrapper);
         if (record != null && record.getCover() != null) {
             String oldFileName = record.getCover();
-            String oldAbsolutePath = GlobalVariables.PROJECT_RESOURCE_PATH + GlobalVariables.COVER_PATH + oldFileName;
+            String oldAbsolutePath = Path.of(globalProperties.getCoverAbsolutePath(), oldFileName).toString();
             //删除旧文件
             File oldFile = new File(oldAbsolutePath);
             if (oldFile.exists()) {
@@ -111,7 +112,7 @@ public class ProjectServiceImpl implements ProjectService {
         //生成文件路径、文件名
         fileName = UUID.randomUUID().toString().replaceAll("-", "") + suffix;
         //保存文件
-        File uploadDir = new File(GlobalVariables.PROJECT_RESOURCE_PATH + GlobalVariables.COVER_PATH);
+        File uploadDir = new File(globalProperties.getCoverAbsolutePath());
         if (!uploadDir.exists()) {
             boolean mkdirs = uploadDir.mkdirs();
             if (!mkdirs)
@@ -127,7 +128,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCover(fileName);
         project.setUpdateTime(LocalDateTime.now());
         projectMapper.updateById(project);
-        return GlobalVariables.COVER_PATH + fileName;
+        return Path.of(globalProperties.getCoverPath(), fileName).toString();
     }
 
     @Override
@@ -146,7 +147,8 @@ public class ProjectServiceImpl implements ProjectService {
         //补全封面的完整路径
         for (ProjectEntity projectEntity : pageData.getRecords()) {
             if (projectEntity.getCover() != null) {
-                projectEntity.setCover(GlobalVariables.COVER_PATH + projectEntity.getCover());
+                String coverPath = PathUtil.toWebPath(Path.of(globalProperties.getCoverPath(), projectEntity.getCover()).toString());
+                projectEntity.setCover(coverPath);
             }
         }
         return pageData;

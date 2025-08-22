@@ -1,20 +1,25 @@
 package com.dagu.lightchaser.config;
 
 import com.dagu.lightchaser.factory.WebParamEnumFactory;
-import com.dagu.lightchaser.global.GlobalVariables;
+import com.dagu.lightchaser.global.GlobalProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
+import java.io.File;
+
 @Configuration
+@RequiredArgsConstructor
 public class StaticSourceInterceptor extends WebMvcConfigurationSupport {
+
+    private final GlobalProperties globalProperties;
 
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String projectResourcePath = "file:" + GlobalVariables.PROJECT_RESOURCE_PATH;
-        registry.addResourceHandler("/static/images/**").addResourceLocations(projectResourcePath + GlobalVariables.SOURCE_IMAGE_PATH);
-        registry.addResourceHandler("/static/covers/**").addResourceLocations(projectResourcePath + GlobalVariables.COVER_PATH);
+        registry.addResourceHandler("/static/images/**").addResourceLocations(String.join("", "file:", globalProperties.getImageAbsolutPath(), File.separator));
+        registry.addResourceHandler("/static/covers/**").addResourceLocations(String.join("", "file:", globalProperties.getCoverAbsolutePath(), File.separator));
         super.addResourceHandlers(registry);
     }
 

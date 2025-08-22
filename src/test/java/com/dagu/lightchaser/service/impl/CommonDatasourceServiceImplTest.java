@@ -3,8 +3,8 @@ package com.dagu.lightchaser.service.impl;
 import com.dagu.lightchaser.config.CryptoConfig;
 import com.dagu.lightchaser.model.constants.DataBaseEnum;
 import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
-import com.dagu.lightchaser.model.entity.DatasourceEntity;
-import com.dagu.lightchaser.mapper.DatasourceMapper;
+import com.dagu.lightchaser.model.po.CommonDatasourcePO;
+import com.dagu.lightchaser.mapper.CommonDatasourceMapper;
 import com.dagu.lightchaser.util.CryptoUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,12 +27,12 @@ import static org.mockito.Mockito.*;
  * @date 2025/07/27
  */
 @ExtendWith(MockitoExtension.class)
-public class DatasourceServiceImplTest {
+public class CommonDatasourceServiceImplTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(DatasourceServiceImplTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommonDatasourceServiceImplTest.class);
 
     @Mock
-    private DatasourceMapper datasourceMapper;
+    private CommonDatasourceMapper commonDatasourceMapper;
 
     @Mock
     private CryptoConfig cryptoConfig;
@@ -44,7 +44,7 @@ public class DatasourceServiceImplTest {
     private CryptoConfig.Aes aes;
 
     @InjectMocks
-    private DatasourceServiceImpl datasourceService;
+    private CommonDatasourceServiceImpl datasourceService;
 
     private String privateKey;
     private String backendAesKey;
@@ -92,10 +92,10 @@ public class DatasourceServiceImplTest {
         try {
             // 模拟数据库插入操作成功
             doAnswer(invocation -> {
-                DatasourceEntity entity = invocation.getArgument(0);
+                CommonDatasourcePO entity = invocation.getArgument(0);
                 entity.setId(1L); // 模拟生成的ID
                 return 1; // 返回影响行数
-            }).when(datasourceMapper).insert(any(DatasourceEntity.class));
+            }).when(commonDatasourceMapper).insert(any(CommonDatasourcePO.class));
 
             // 执行测试
             Long result = datasourceService.addDataSource(testRequest);
@@ -105,7 +105,7 @@ public class DatasourceServiceImplTest {
             assertEquals(1L, result, "返回的ID应为1");
 
             // 验证 mapper 调用
-            verify(datasourceMapper, times(1)).insert(any(DatasourceEntity.class));
+            verify(commonDatasourceMapper, times(1)).insert(any(CommonDatasourcePO.class));
 
             logger.info("addDataSource 方法测试成功，返回ID: {}", result);
 

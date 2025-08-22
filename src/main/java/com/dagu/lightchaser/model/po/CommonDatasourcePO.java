@@ -1,9 +1,8 @@
-package com.dagu.lightchaser.model.entity;
+package com.dagu.lightchaser.model.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.dagu.lightchaser.model.constants.DataBaseEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,13 +12,11 @@ import java.time.LocalDateTime;
  * 数据源管理
  */
 @Data
-@TableName(value = "datasource")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class DatasourceEntity implements Serializable {
+@TableName(value = "common_database")
+public class CommonDatasourcePO implements Serializable {
     /**
      * id
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableId(type = IdType.AUTO)
     private Long id;
 
@@ -69,8 +66,5 @@ public class DatasourceEntity implements Serializable {
      */
     @TableLogic
     private int deleted;
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 
 }

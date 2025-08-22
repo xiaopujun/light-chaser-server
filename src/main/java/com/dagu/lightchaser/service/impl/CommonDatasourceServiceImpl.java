@@ -3,23 +3,27 @@ package com.dagu.lightchaser.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dagu.lightchaser.config.CryptoConfig;
-import com.dagu.lightchaser.model.constants.DataBaseEnum;
-import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
-import com.dagu.lightchaser.model.dto.DatasourceUpdateRequest;
-import com.dagu.lightchaser.model.entity.DatasourceEntity;
-import com.dagu.lightchaser.model.entity.PageParamEntity;
 import com.dagu.lightchaser.executor.DataBaseExecuteFactory;
 import com.dagu.lightchaser.global.AppException;
-import com.dagu.lightchaser.mapper.DatasourceMapper;
-import com.dagu.lightchaser.service.DatasourceService;
+import com.dagu.lightchaser.mapper.CommonDatasourceMapper;
+import com.dagu.lightchaser.model.constants.DataBaseEnum;
+import com.dagu.lightchaser.model.dto.CommonDatasourceDTO;
+import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
+import com.dagu.lightchaser.model.dto.DatasourceUpdateRequest;
+import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.po.CommonDatasourcePO;
+import com.dagu.lightchaser.service.CommonDatasourceService;
 import com.dagu.lightchaser.util.CryptoUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,30 +34,32 @@ import java.util.List;
  * @createDate 2024-04-12 11:07:34
  */
 @Service
-public class DatasourceServiceImpl implements DatasourceService {
-
-    private static final Logger logger = LoggerFactory.getLogger(DatasourceServiceImpl.class);
-
-    @Autowired
-    private DatasourceMapper datasourceMapper;
-
-    @Autowired
-    private CryptoConfig cryptoConfig;
+@RequiredArgsConstructor
+public class CommonDatasourceServiceImpl extends ServiceImpl<CommonDatasourceMapper, CommonDatasourcePO> implements CommonDatasourceService {
+    private static final Logger logger = LoggerFactory.getLogger(CommonDatasourceServiceImpl.class);
+    private final CryptoConfig cryptoConfig;
 
 
     @Override
-    public List<DatasourceEntity> getDataSourceList() {
-        LambdaQueryWrapper<DatasourceEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.select(DatasourceEntity::getId, DatasourceEntity::getName, DatasourceEntity::getUsername, DatasourceEntity::getType, DatasourceEntity::getUrl);
-        return datasourceMapper.selectList(wrapper);
+    public List<CommonDatasourceDTO> getDataSourceList() {
+        LambdaQueryWrapper<CommonDatasourcePO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(CommonDatasourcePO::getId, CommonDatasourcePO::getName, CommonDatasourcePO::getUsername, CommonDatasourcePO::getType, CommonDatasourcePO::getUrl);
+        return getBaseMapper().selectList(wrapper).stream().map(datasource -> {
+            CommonDatasourceDTO dto = new CommonDatasourceDTO();
+            BeanUtils.copyProperties(datasource, dto);
+            dto.setPassword("******");
+            return dto;
+        }).toList();
     }
 
     @Override
-    public Long addDataSource(DatasourceEntity datasource) {
+    @Transactional
+    public Long addDataSource(CommonDatasourceDTO datasource) {
         if (datasource == null)
             return null;
-        datasource.setCreateTime(LocalDateTime.now());
-        datasourceMapper.insert(datasource);
+        CommonDatasourcePO po = new CommonDatasourcePO();
+        BeanUtils.copyProperties(datasource, po);
+        save(po);
         return datasource.getId();
     }
 
@@ -61,17 +67,13 @@ public class DatasourceServiceImpl implements DatasourceService {
     public Long addDataSource(DatasourceAddRequest request) {
         try {
             String encryptedPassword = getEncryptedPassword(request.getPassword(), request.getAesKey());
-
-            // 5. 创建DatasourceEntity并保存
-            DatasourceEntity datasource = new DatasourceEntity();
+            CommonDatasourcePO datasource = new CommonDatasourcePO();
             datasource.setName(request.getName());
             datasource.setType(request.getType());
             datasource.setUsername(request.getUsername());
             datasource.setPassword(encryptedPassword);
             datasource.setUrl(request.getUrl());
-            datasource.setCreateTime(LocalDateTime.now());
-
-            datasourceMapper.insert(datasource);
+            getBaseMapper().insert(datasource);
             return datasource.getId();
         } catch (Exception e) {
             logger.error("Failed to add datasource with encryption: ", e);
@@ -79,7 +81,7 @@ public class DatasourceServiceImpl implements DatasourceService {
         }
     }
 
-    private String getEncryptedPassword(String password,String aesKey) throws Exception {
+    private String getEncryptedPassword(String password, String aesKey) throws Exception {
         // 1. 从配置文件读取RSA私钥（CryptoConfig已经处理过格式）
         String privateKeyString = cryptoConfig.getRsa().getPrivateKey();
 
@@ -94,52 +96,57 @@ public class DatasourceServiceImpl implements DatasourceService {
     }
 
     @Override
+    @Transactional
     public Boolean updateDataSource(DatasourceUpdateRequest datasource) throws Exception {
         if (datasource.getId() == null)
             return false;
-
         String encryptedPassword = getEncryptedPassword(datasource.getPassword(), datasource.getAesKey());
-
-        return datasourceMapper.update(new LambdaUpdateWrapper<DatasourceEntity>()
-                .eq(DatasourceEntity::getId, datasource.getId())
-                .set(DatasourceEntity::getName, datasource.getName())
-                .set(DatasourceEntity::getUsername, datasource.getUsername())
-                .set(DatasourceEntity::getPassword, encryptedPassword)
-                .set(DatasourceEntity::getType, datasource.getType())
-                .set(DatasourceEntity::getUrl, datasource.getUrl())
-                .set(DatasourceEntity::getUpdateTime, LocalDateTime.now())
+        return getBaseMapper().update(new LambdaUpdateWrapper<CommonDatasourcePO>()
+                .eq(CommonDatasourcePO::getId, datasource.getId())
+                .set(CommonDatasourcePO::getName, datasource.getName())
+                .set(CommonDatasourcePO::getUsername, datasource.getUsername())
+                .set(CommonDatasourcePO::getPassword, encryptedPassword)
+                .set(CommonDatasourcePO::getType, datasource.getType())
+                .set(CommonDatasourcePO::getUrl, datasource.getUrl())
+                .set(CommonDatasourcePO::getUpdateTime, LocalDateTime.now())
         ) > 0;
     }
 
     @Override
-    public DatasourceEntity getDataSource(Long id) {
+    public CommonDatasourceDTO getDataSource(Long id) {
         if (id == null)
             return null;
-        LambdaQueryWrapper<DatasourceEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.select(DatasourceEntity::getId, DatasourceEntity::getName, DatasourceEntity::getUsername, DatasourceEntity::getPassword, DatasourceEntity::getType, DatasourceEntity::getUrl);
-        wrapper.eq(DatasourceEntity::getId, id);
-        return datasourceMapper.selectOne(wrapper);
+        LambdaQueryWrapper<CommonDatasourcePO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(CommonDatasourcePO::getId, CommonDatasourcePO::getName, CommonDatasourcePO::getUsername, CommonDatasourcePO::getPassword, CommonDatasourcePO::getType, CommonDatasourcePO::getUrl);
+        wrapper.eq(CommonDatasourcePO::getId, id);
+        CommonDatasourcePO po = getBaseMapper().selectOne(wrapper);
+        CommonDatasourceDTO dto = new CommonDatasourceDTO();
+        BeanUtils.copyProperties(po, dto);
+        dto.setPassword("******");
+        return dto;
     }
 
     @Override
+    @Transactional
     public Boolean copyDataSource(Long id) {
         if (id == null)
             return false;
-        DatasourceEntity datasource = getDataSource(id);
+        CommonDatasourcePO datasource = getById(id);
         if (datasource == null)
             return false;
         datasource.setId(null);
         datasource.setCreateTime(null);
         datasource.setUpdateTime(null);
         datasource.setName(datasource.getName() + "（副本）");
-        return addDataSource(datasource) > 0;
+        return save(datasource);
     }
 
     @Override
+    @Transactional
     public Boolean delDataSource(Long id) {
         if (id == null)
             return false;
-        return datasourceMapper.deleteById(id) > 0;
+        return removeById(id);
     }
 
     /**
@@ -155,7 +162,7 @@ public class DatasourceServiceImpl implements DatasourceService {
             return false;
         }
 
-        DatasourceEntity datasource = getDataSource(id);
+        CommonDatasourcePO datasource = getById(id);
         if (datasource == null) {
             logger.warn("未找到ID为{}的数据源", id);
             return false;
@@ -163,7 +170,6 @@ public class DatasourceServiceImpl implements DatasourceService {
 
         try {
             logger.info("开始测试数据源连接: {} ({})", datasource.getName(), datasource.getType());
-
             datasource.setPassword(CryptoUtil.decryptByAESWithIV2(datasource.getPassword(), cryptoConfig.getAes().getKey()));
             // 构建数据源连接（已包含连接测试）
             JdbcTemplate jdbcTemplate = DataBaseExecuteFactory.buildDataSource(datasource);
@@ -178,10 +184,8 @@ public class DatasourceServiceImpl implements DatasourceService {
         } catch (Exception exception) {
             logger.error("数据源连接测试失败: {} ({}), 错误信息: {}",
                     datasource.getName(), datasource.getType(), exception.getMessage(), exception);
-
             // 移除缓存的失败连接
             DataBaseExecuteFactory.removeDatasourceCache(datasource);
-
             // 抛出友好的错误信息
             String errorMessage = buildUserFriendlyErrorMessage(datasource.getType(), exception);
             throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
@@ -236,17 +240,23 @@ public class DatasourceServiceImpl implements DatasourceService {
     }
 
     @Override
-    public Page<DatasourceEntity> getDataSourcePageList(PageParamEntity pageParam) {
+    public Page<CommonDatasourceDTO> getDataSourcePageList(PageParamEntity pageParam) {
         if (pageParam == null)
             return new Page<>();
-        Page<DatasourceEntity> page = new Page<>();
+        Page<CommonDatasourcePO> page = new Page<>();
         page.setSize(pageParam.getSize() == 0 ? 10 : pageParam.getSize());
         page.setCurrent(pageParam.getCurrent() == 0 ? 1 : pageParam.getCurrent());
-        LambdaQueryWrapper<DatasourceEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.select(DatasourceEntity::getId, DatasourceEntity::getName, DatasourceEntity::getUsername, DatasourceEntity::getType, DatasourceEntity::getUrl);
+        LambdaQueryWrapper<CommonDatasourcePO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(CommonDatasourcePO::getId, CommonDatasourcePO::getName, CommonDatasourcePO::getUsername, CommonDatasourcePO::getType, CommonDatasourcePO::getUrl);
         if (pageParam.getSearchValue() != null && !pageParam.getSearchValue().isEmpty())
-            wrapper.like(DatasourceEntity::getName, pageParam.getSearchValue());
-        return datasourceMapper.selectPage(page, wrapper);
+            wrapper.like(CommonDatasourcePO::getName, pageParam.getSearchValue());
+        Page<CommonDatasourcePO> dtoPage = getBaseMapper().selectPage(page, wrapper);
+        return (Page<CommonDatasourceDTO>) dtoPage.convert(po -> {
+            CommonDatasourceDTO dto = new CommonDatasourceDTO();
+            BeanUtils.copyProperties(po, dto);
+            dto.setPassword("******");
+            return dto;
+        });
     }
 
 }

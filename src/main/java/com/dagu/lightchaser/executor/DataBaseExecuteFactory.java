@@ -3,7 +3,7 @@ package com.dagu.lightchaser.executor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.dagu.lightchaser.model.constants.DataBaseEnum;
-import com.dagu.lightchaser.model.entity.DatasourceEntity;
+import com.dagu.lightchaser.model.po.CommonDatasourcePO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,11 +39,11 @@ public class DataBaseExecuteFactory {
     /**
      * 构建数据源连接
      *
-     * @param datasourceEntity 数据源实体
+     * @param commonDatasourcePO 数据源实体
      * @return {@link JdbcTemplate}
      */
-    public static JdbcTemplate buildDataSource(DatasourceEntity datasourceEntity) {
-        String key = generateCacheKey(datasourceEntity);
+    public static JdbcTemplate buildDataSource(CommonDatasourcePO commonDatasourcePO) {
+        String key = generateCacheKey(commonDatasourcePO);
         
         HikariDataSource cachedDataSource = datasourceCache.get(key);
         if (cachedDataSource != null && !cachedDataSource.isClosed()) {
@@ -51,18 +51,18 @@ public class DataBaseExecuteFactory {
         }
         
         try {
-            HikariConfig config = createHikariConfig(datasourceEntity);
+            HikariConfig config = createHikariConfig(commonDatasourcePO);
             HikariDataSource dataSource = new HikariDataSource(config);
             
             // 验证连接
-            testConnection(dataSource, datasourceEntity.getType());
+            testConnection(dataSource, commonDatasourcePO.getType());
             
             datasourceCache.put(key, dataSource);
-            logger.info("创建数据源连接成功: {}", datasourceEntity.getUrl());
+            logger.info("创建数据源连接成功: {}", commonDatasourcePO.getUrl());
             
             return new JdbcTemplate(dataSource);
         } catch (Exception e) {
-            logger.error("创建数据源连接失败: {}, 错误信息: {}", datasourceEntity.getUrl(), e.getMessage());
+            logger.error("创建数据源连接失败: {}, 错误信息: {}", commonDatasourcePO.getUrl(), e.getMessage());
             throw new RuntimeException("数据库连接失败: " + e.getMessage(), e);
         }
     }
@@ -70,21 +70,21 @@ public class DataBaseExecuteFactory {
     /**
      * 创建HikariCP配置
      *
-     * @param datasourceEntity 数据源实体
+     * @param commonDatasourcePO 数据源实体
      * @return {@link HikariConfig}
      */
-    private static HikariConfig createHikariConfig(DatasourceEntity datasourceEntity) {
+    private static HikariConfig createHikariConfig(CommonDatasourcePO commonDatasourcePO) {
         HikariConfig config = new HikariConfig();
         
-        String driverClassName = databaseDriverMap.get(datasourceEntity.getType());
+        String driverClassName = databaseDriverMap.get(commonDatasourcePO.getType());
         if (driverClassName == null) {
-            throw new IllegalArgumentException("不支持的数据库类型: " + datasourceEntity.getType());
+            throw new IllegalArgumentException("不支持的数据库类型: " + commonDatasourcePO.getType());
         }
         
         config.setDriverClassName(driverClassName);
-        config.setJdbcUrl(normalizeJdbcUrl(datasourceEntity.getUrl(), datasourceEntity.getType()));
-        config.setUsername(datasourceEntity.getUsername());
-        config.setPassword(datasourceEntity.getPassword());
+        config.setJdbcUrl(normalizeJdbcUrl(commonDatasourcePO.getUrl(), commonDatasourcePO.getType()));
+        config.setUsername(commonDatasourcePO.getUsername());
+        config.setPassword(commonDatasourcePO.getPassword());
         
         // HikariCP 连接池配置
         config.setMaximumPoolSize(5);
@@ -95,7 +95,7 @@ public class DataBaseExecuteFactory {
         config.setLeakDetectionThreshold(60000); // 1分钟泄露检测
         
         // 数据库特定配置
-        switch (datasourceEntity.getType()) {
+        switch (commonDatasourcePO.getType()) {
             case MySQL:
                 config.addDataSourceProperty("useUnicode", "true");
                 config.addDataSourceProperty("characterEncoding", "utf8");
@@ -235,25 +235,25 @@ public class DataBaseExecuteFactory {
     /**
      * 生成缓存键
      *
-     * @param datasourceEntity 数据源实体
+     * @param commonDatasourcePO 数据源实体
      * @return 缓存键
      */
-    private static String generateCacheKey(DatasourceEntity datasourceEntity) {
-        return datasourceEntity.getUrl() + "_" + datasourceEntity.getUsername() + "_" + 
-               datasourceEntity.getPassword() + "_" + datasourceEntity.getType();
+    private static String generateCacheKey(CommonDatasourcePO commonDatasourcePO) {
+        return commonDatasourcePO.getUrl() + "_" + commonDatasourcePO.getUsername() + "_" +
+               commonDatasourcePO.getPassword() + "_" + commonDatasourcePO.getType();
     }
     
     /**
      * 移除数据源缓存
      *
-     * @param datasourceEntity 数据源实体
+     * @param commonDatasourcePO 数据源实体
      */
-    public static void removeDatasourceCache(DatasourceEntity datasourceEntity) {
-        String key = generateCacheKey(datasourceEntity);
+    public static void removeDatasourceCache(CommonDatasourcePO commonDatasourcePO) {
+        String key = generateCacheKey(commonDatasourcePO);
         HikariDataSource dataSource = datasourceCache.remove(key);
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
-            logger.info("关闭数据源连接: {}", datasourceEntity.getUrl());
+            logger.info("关闭数据源连接: {}", commonDatasourcePO.getUrl());
         }
     }
     

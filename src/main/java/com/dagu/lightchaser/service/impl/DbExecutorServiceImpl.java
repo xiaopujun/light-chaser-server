@@ -1,10 +1,10 @@
 package com.dagu.lightchaser.service.impl;
 
-import com.dagu.lightchaser.model.entity.DatasourceEntity;
+import com.dagu.lightchaser.model.po.CommonDatasourcePO;
 import com.dagu.lightchaser.model.entity.DbExecutorEntity;
 import com.dagu.lightchaser.executor.DataBaseExecuteFactory;
 import com.dagu.lightchaser.global.AppException;
-import com.dagu.lightchaser.service.DatasourceService;
+import com.dagu.lightchaser.service.CommonDatasourceService;
 import com.dagu.lightchaser.service.DbExecutorService;
 import com.dagu.lightchaser.util.Base64Util;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class DbExecutorServiceImpl implements DbExecutorService {
 
     @Autowired
-    private DatasourceService datasourceService;
+    private CommonDatasourceService commonDatasourceService;
 
     @Override
     public Object executeSql(DbExecutorEntity dbExecutorEntity) {
@@ -30,10 +30,10 @@ public class DbExecutorServiceImpl implements DbExecutorService {
         String sql = Base64Util.decode(dbExecutorEntity.getSql());
         if (!sql.trim().toLowerCase().startsWith("select"))
             throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQL cannot be empty and must start with select");
-        DatasourceEntity dataSourceEntity = datasourceService.getDataSource(dbExecutorEntity.getId());
-        if (dataSourceEntity == null)
+        CommonDatasourcePO dataSourcePOCommon = commonDatasourceService.getById(dbExecutorEntity.getId());
+        if (dataSourcePOCommon == null)
             throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "The data source does not exist");
-        JdbcTemplate jdbcTemplate = DataBaseExecuteFactory.buildDataSource(dataSourceEntity);
+        JdbcTemplate jdbcTemplate = DataBaseExecuteFactory.buildDataSource(dataSourcePOCommon);
         try {
             List<Map<String, Object>> res = jdbcTemplate.queryForList(sql);
             if (res.size() == 1)
@@ -41,7 +41,7 @@ public class DbExecutorServiceImpl implements DbExecutorService {
             return res;
         } catch (Exception e) {
             log.error("execute sql error, please check sql syntax, sql:{}", sql, e);
-            DataBaseExecuteFactory.removeDatasourceCache(dataSourceEntity);
+            DataBaseExecuteFactory.removeDatasourceCache(dataSourcePOCommon);
             throw new AppException(500, "SQL execution is incorrect, check the SQL syntax");
         }
     }

@@ -1,63 +1,62 @@
 package com.dagu.lightchaser.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dagu.lightchaser.global.ApiResponse;
+import com.dagu.lightchaser.model.dto.CommonDatasourceDTO;
 import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
 import com.dagu.lightchaser.model.dto.DatasourceUpdateRequest;
-import com.dagu.lightchaser.model.entity.DatasourceEntity;
 import com.dagu.lightchaser.model.entity.PageParamEntity;
-import com.dagu.lightchaser.global.ApiResponse;
-import com.dagu.lightchaser.service.DatasourceService;
-import org.springframework.web.bind.annotation.*;
-
+import com.dagu.lightchaser.service.CommonDatasourceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/datasource")
+@RequestMapping("/api/commonDatabase")
 public class DataSourceController {
 
     @Autowired
-    private DatasourceService datasourceService;
+    private CommonDatasourceService commonDatasourceService;
 
     @GetMapping("/get/{id}")
-    public ApiResponse<DatasourceEntity> getDataSource(@PathVariable Long id) {
-        return ApiResponse.success(datasourceService.getDataSource(id));
+    public ApiResponse<CommonDatasourceDTO> getDataSource(@PathVariable Long id) {
+        return ApiResponse.success(commonDatasourceService.getDataSource(id));
     }
 
     @GetMapping("/list")
-    public ApiResponse<List<DatasourceEntity>> getDataSourceList() {
-        return ApiResponse.success(datasourceService.getDataSourceList());
+    public ApiResponse<List<CommonDatasourceDTO>> getDataSourceList() {
+        return ApiResponse.success(commonDatasourceService.getDataSourceList());
     }
 
     @PostMapping("/pageList")
-    public ApiResponse<Page<DatasourceEntity>> getDataSourcePageList(@RequestBody PageParamEntity pageParam) {
-        return ApiResponse.success(datasourceService.getDataSourcePageList(pageParam));
+    public ApiResponse<Page<CommonDatasourceDTO>> getDataSourcePageList(@RequestBody PageParamEntity pageParam) {
+        return ApiResponse.success(commonDatasourceService.getDataSourcePageList(pageParam));
     }
 
     @PostMapping("/add")
     public ApiResponse<Long> addDataSource(@RequestBody DatasourceAddRequest request) {
-        return ApiResponse.success(datasourceService.addDataSource(request));
+        return ApiResponse.success(commonDatasourceService.addDataSource(request));
     }
 
     @PostMapping("/update")
     public ApiResponse<Boolean> updateDataSource(@RequestBody DatasourceUpdateRequest datasource) throws Exception {
-        return ApiResponse.success(datasourceService.updateDataSource(datasource));
+        return ApiResponse.success(commonDatasourceService.updateDataSource(datasource));
     }
 
     @GetMapping("/copy/{id}")
     public ApiResponse<Boolean> copyDataSource(@PathVariable Long id) {
-        return ApiResponse.success(datasourceService.copyDataSource(id));
+        return ApiResponse.success(commonDatasourceService.copyDataSource(id));
     }
 
-    @GetMapping("/del/{id}")
-    public ApiResponse<Boolean> delDataSource(@PathVariable Long id) {
-        return ApiResponse.success(datasourceService.delDataSource(id));
+    @PostMapping("/batchDel")
+    public ApiResponse<Boolean> batchDeleteCommonDatabase(@RequestBody List<Long> ids) {
+        return ApiResponse.success(commonDatasourceService.removeBatchByIds(ids));
     }
 
     @GetMapping("/test/{id}")
     public ApiResponse<Boolean> testDataSourceConnect(@PathVariable Long id) {
-        return ApiResponse.success("链接正常", datasourceService.testDataSourceConnect(id));
+        return ApiResponse.success("链接正常", commonDatasourceService.testDataSourceConnect(id));
     }
 
 }
