@@ -1,8 +1,10 @@
 package com.dagu.lightchaser.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dagu.lightchaser.model.dto.ImageDTO;
 import com.dagu.lightchaser.model.po.ImagePO;
+import com.dagu.lightchaser.model.query.PageParamQuery;
 
 import java.util.List;
 
@@ -23,4 +25,12 @@ public interface ImageService extends IService<ImagePO> {
      * @return 是否删除成功
      */
     Boolean batchDeleteImage(List<Long> imageIdList);
+
+    /**
+     * 获取图片列表
+     *
+     * @param pageParam 分页参数
+     * @return 图片列表
+     */
+    Page<ImageDTO> getImagePageList(PageParamQuery pageParam);
 }

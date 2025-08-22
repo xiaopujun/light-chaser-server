@@ -6,7 +6,7 @@ import com.dagu.lightchaser.model.dto.CommonDatasourceDTO;
 import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
 import com.dagu.lightchaser.model.dto.DatasourceUpdateRequest;
 import com.dagu.lightchaser.model.po.CommonDatasourcePO;
-import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.query.PageParamQuery;
 
 import java.util.List;
 
@@ -33,5 +33,5 @@ public interface CommonDatasourceService extends IService<CommonDatasourcePO> {
 
     Boolean testDataSourceConnect(Long id);
 
-    Page<CommonDatasourceDTO> getDataSourcePageList(PageParamEntity pageParam);
+    Page<CommonDatasourceDTO> getDataSourcePageList(PageParamQuery pageParam);
 }

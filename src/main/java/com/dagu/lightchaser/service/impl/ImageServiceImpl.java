@@ -1,12 +1,16 @@
 package com.dagu.lightchaser.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalProperties;
 import com.dagu.lightchaser.mapper.ImageMapper;
 import com.dagu.lightchaser.model.dto.ImageDTO;
 import com.dagu.lightchaser.model.po.ImagePO;
+import com.dagu.lightchaser.model.query.PageParamQuery;
 import com.dagu.lightchaser.service.ImageService;
+import com.dagu.lightchaser.util.PathUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,5 +76,26 @@ public class ImageServiceImpl extends ServiceImpl<ImageMapper, ImagePO> implemen
         if (imageIdList == null || imageIdList.isEmpty())
             throw new AppException(500, "删除错误：图片ID列表为空");
         return removeBatchByIds(imageIdList);
+    }
+
+    @Override
+    public Page<ImageDTO> getImagePageList(PageParamQuery pageParam) {
+        if (pageParam == null)
+            return new Page<>();
+        Page<ImagePO> page = new Page<>();
+        page.setSize(pageParam.getSize() == 0 ? 10 : pageParam.getSize());
+        page.setCurrent(pageParam.getCurrent() == 0 ? 1 : pageParam.getCurrent());
+        LambdaQueryWrapper<ImagePO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(ImagePO::getId, ImagePO::getName, ImagePO::getUrl);
+        if (pageParam.getKeywords() != null && !pageParam.getKeywords().isEmpty())
+            wrapper.like(ImagePO::getName, pageParam.getKeywords());
+        Page<ImagePO> dtoPage = getBaseMapper().selectPage(page, wrapper);
+        return (Page<ImageDTO>) dtoPage.convert(po -> {
+            ImageDTO dto = new ImageDTO();
+            dto.setId(po.getId());
+            dto.setName(po.getName());
+            dto.setUrl(PathUtil.toWebPath(Path.of(globalProperties.getImagePath(), po.getUrl()).toString()));
+            return dto;
+        });
     }
 }

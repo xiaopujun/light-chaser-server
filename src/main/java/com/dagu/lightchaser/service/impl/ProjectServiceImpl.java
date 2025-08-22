@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalProperties;
 import com.dagu.lightchaser.mapper.ProjectMapper;
-import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.query.PageParamQuery;
 import com.dagu.lightchaser.model.entity.ProjectEntity;
 import com.dagu.lightchaser.service.ProjectService;
 import com.dagu.lightchaser.util.PathUtil;
@@ -132,7 +132,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Page<ProjectEntity> getProjectPageList(PageParamEntity pageParam) {
+    public Page<ProjectEntity> getProjectPageList(PageParamQuery pageParam) {
         if (pageParam == null)
             return new Page<>();
         long current = pageParam.getCurrent() == null ? 1 : pageParam.getCurrent();
@@ -141,8 +141,8 @@ public class ProjectServiceImpl implements ProjectService {
         LambdaQueryWrapper<ProjectEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(ProjectEntity::getId, ProjectEntity::getName, ProjectEntity::getDes, ProjectEntity::getCover);
         wrapper.orderByDesc(ProjectEntity::getCreateTime);
-        if (pageParam.getSearchValue() != null)
-            wrapper.like(ProjectEntity::getName, pageParam.getSearchValue());
+        if (pageParam.getKeywords() != null)
+            wrapper.like(ProjectEntity::getName, pageParam.getKeywords());
         Page<ProjectEntity> pageData = projectMapper.selectPage(page, wrapper);
         //补全封面的完整路径
         for (ProjectEntity projectEntity : pageData.getRecords()) {

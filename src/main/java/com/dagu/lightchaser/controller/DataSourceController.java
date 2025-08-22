@@ -5,7 +5,7 @@ import com.dagu.lightchaser.global.ApiResponse;
 import com.dagu.lightchaser.model.dto.CommonDatasourceDTO;
 import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
 import com.dagu.lightchaser.model.dto.DatasourceUpdateRequest;
-import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.query.PageParamQuery;
 import com.dagu.lightchaser.service.CommonDatasourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ public class DataSourceController {
     }
 
     @PostMapping("/pageList")
-    public ApiResponse<Page<CommonDatasourceDTO>> getDataSourcePageList(@RequestBody PageParamEntity pageParam) {
+    public ApiResponse<Page<CommonDatasourceDTO>> getDataSourcePageList(@RequestBody PageParamQuery pageParam) {
         return ApiResponse.success(commonDatasourceService.getDataSourcePageList(pageParam));
     }
 

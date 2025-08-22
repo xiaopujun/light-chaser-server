@@ -1,7 +1,7 @@
 package com.dagu.lightchaser.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.query.PageParamQuery;
 import com.dagu.lightchaser.model.entity.ProjectEntity;
 import com.dagu.lightchaser.global.ApiResponse;
 import com.dagu.lightchaser.service.ProjectService;
@@ -15,7 +15,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping("/pageList")
-    public ApiResponse<Page<ProjectEntity>> getProjectPageList(@RequestBody PageParamEntity pageParam) {
+    public ApiResponse<Page<ProjectEntity>> getProjectPageList(@RequestBody PageParamQuery pageParam) {
         return ApiResponse.success(projectService.getProjectPageList(pageParam));
     }
 

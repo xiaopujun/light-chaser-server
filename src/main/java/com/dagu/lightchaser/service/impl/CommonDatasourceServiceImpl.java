@@ -12,7 +12,7 @@ import com.dagu.lightchaser.model.constants.DataBaseEnum;
 import com.dagu.lightchaser.model.dto.CommonDatasourceDTO;
 import com.dagu.lightchaser.model.dto.DatasourceAddRequest;
 import com.dagu.lightchaser.model.dto.DatasourceUpdateRequest;
-import com.dagu.lightchaser.model.entity.PageParamEntity;
+import com.dagu.lightchaser.model.query.PageParamQuery;
 import com.dagu.lightchaser.model.po.CommonDatasourcePO;
 import com.dagu.lightchaser.service.CommonDatasourceService;
 import com.dagu.lightchaser.util.CryptoUtil;
@@ -240,7 +240,7 @@ public class CommonDatasourceServiceImpl extends ServiceImpl<CommonDatasourceMap
     }
 
     @Override
-    public Page<CommonDatasourceDTO> getDataSourcePageList(PageParamEntity pageParam) {
+    public Page<CommonDatasourceDTO> getDataSourcePageList(PageParamQuery pageParam) {
         if (pageParam == null)
             return new Page<>();
         Page<CommonDatasourcePO> page = new Page<>();
@@ -248,8 +248,8 @@ public class CommonDatasourceServiceImpl extends ServiceImpl<CommonDatasourceMap
         page.setCurrent(pageParam.getCurrent() == 0 ? 1 : pageParam.getCurrent());
         LambdaQueryWrapper<CommonDatasourcePO> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(CommonDatasourcePO::getId, CommonDatasourcePO::getName, CommonDatasourcePO::getUsername, CommonDatasourcePO::getType, CommonDatasourcePO::getUrl);
-        if (pageParam.getSearchValue() != null && !pageParam.getSearchValue().isEmpty())
-            wrapper.like(CommonDatasourcePO::getName, pageParam.getSearchValue());
+        if (pageParam.getKeywords() != null && !pageParam.getKeywords().isEmpty())
+            wrapper.like(CommonDatasourcePO::getName, pageParam.getKeywords());
         Page<CommonDatasourcePO> dtoPage = getBaseMapper().selectPage(page, wrapper);
         return (Page<CommonDatasourceDTO>) dtoPage.convert(po -> {
             CommonDatasourceDTO dto = new CommonDatasourceDTO();
