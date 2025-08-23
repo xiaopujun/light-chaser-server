@@ -16,6 +16,11 @@ import java.nio.file.Path;
 public class GlobalProperties {
 
     /**
+     * 项目版本号
+     */
+    private String version = "1.7.0";
+
+    /**
      * 项目资源路径，用于存储本项目相关的外部资源文件
      * application.yml/application.properties 配置项:
      * light-chaser.project-resource-path=xxx

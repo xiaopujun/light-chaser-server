@@ -1,6 +1,7 @@
 package com.dagu.lightchaser.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dagu.lightchaser.global.AppException;
@@ -97,5 +98,14 @@ public class ImageServiceImpl extends ServiceImpl<ImageMapper, ImagePO> implemen
             dto.setUrl(PathUtil.toWebPath(Path.of(globalProperties.getImagePath(), po.getUrl()).toString()));
             return dto;
         });
+    }
+
+    @Override
+    public List<ImagePO> getImages(List<String> urls) {
+        if (urls == null || urls.isEmpty())
+            return List.of();
+        QueryWrapper<ImagePO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(ImagePO::getUrl, urls);
+        return getBaseMapper().selectList(queryWrapper);
     }
 }

@@ -33,4 +33,12 @@ public interface ImageService extends IService<ImagePO> {
      * @return 图片列表
      */
     Page<ImageDTO> getImagePageList(PageParamQuery pageParam);
+
+    /**
+     * 根据图片名称获取图片
+     *
+     * @param urls 图片名称
+     * @return 图片列表
+     */
+    List<ImagePO> getImages(List<String> urls);
 }

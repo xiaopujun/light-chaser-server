@@ -1,4 +1,4 @@
-package com.dagu.lightchaser.model.entity;
+package com.dagu.lightchaser.model.dto;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @TableName("project")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProjectEntity implements Serializable {
+public class ProjectDTO implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableId(type = IdType.AUTO)
     private Long id;

@@ -1,11 +1,13 @@
 package com.dagu.lightchaser.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dagu.lightchaser.model.query.PageParamQuery;
-import com.dagu.lightchaser.model.entity.ProjectEntity;
 import com.dagu.lightchaser.global.ApiResponse;
+import com.dagu.lightchaser.model.dto.ProjectDependencyParamDTO;
+import com.dagu.lightchaser.model.dto.ProjectDTO;
+import com.dagu.lightchaser.model.query.PageParamQuery;
 import com.dagu.lightchaser.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,7 +17,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping("/pageList")
-    public ApiResponse<Page<ProjectEntity>> getProjectPageList(@RequestBody PageParamQuery pageParam) {
+    public ApiResponse<Page<ProjectDTO>> getProjectPageList(@RequestBody PageParamQuery pageParam) {
         return ApiResponse.success(projectService.getProjectPageList(pageParam));
     }
 
@@ -25,17 +27,17 @@ public class ProjectController {
     }
 
     @GetMapping("/getProjectInfo/{id}")
-    public ApiResponse<ProjectEntity> getProjectInfo(@PathVariable(name = "id") Long id) {
+    public ApiResponse<ProjectDTO> getProjectInfo(@PathVariable(name = "id") Long id) {
         return ApiResponse.success(projectService.getProjectInfo(id));
     }
 
     @PostMapping("/update")
-    public ApiResponse<Boolean> updateProject(@RequestBody ProjectEntity project) {
+    public ApiResponse<Boolean> updateProject(@RequestBody ProjectDTO project) {
         return ApiResponse.success(projectService.updateProject(project));
     }
 
     @PostMapping("/create")
-    public ApiResponse<Long> createProject(@RequestBody ProjectEntity project) {
+    public ApiResponse<Long> createProject(@RequestBody ProjectDTO project) {
         return ApiResponse.success(projectService.createProject(project));
     }
 
@@ -50,7 +52,12 @@ public class ProjectController {
     }
 
     @PostMapping(value = "/cover")
-    public ApiResponse<String> uploadCover(ProjectEntity project) {
+    public ApiResponse<String> uploadCover(ProjectDTO project) {
         return ApiResponse.success(projectService.uploadCover(project));
+    }
+
+    @PostMapping("/exportProject")
+    public ResponseEntity<byte[]> exportProject(@RequestBody ProjectDependencyParamDTO dependency) throws Exception {
+        return projectService.exportProject(dependency);
     }
 }

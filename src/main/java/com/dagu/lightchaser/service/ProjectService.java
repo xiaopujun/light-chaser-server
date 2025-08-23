@@ -1,23 +1,29 @@
 package com.dagu.lightchaser.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.dagu.lightchaser.model.dto.ProjectDependencyParamDTO;
+import com.dagu.lightchaser.model.po.ProjectPO;
 import com.dagu.lightchaser.model.query.PageParamQuery;
-import com.dagu.lightchaser.model.entity.ProjectEntity;
+import com.dagu.lightchaser.model.dto.ProjectDTO;
+import org.springframework.http.ResponseEntity;
 
-public interface ProjectService {
-    Boolean updateProject(ProjectEntity project);
+public interface ProjectService extends IService<ProjectPO> {
+    Boolean updateProject(ProjectDTO project);
 
     String getProjectData(Long id);
 
-    Long createProject(ProjectEntity project);
+    Long createProject(ProjectDTO project);
 
     Boolean deleteProject(Long id);
 
     Long copyProject(Long id);
 
-    ProjectEntity getProjectInfo(Long id);
+    ProjectDTO getProjectInfo(Long id);
 
-    String uploadCover(ProjectEntity project);
+    String uploadCover(ProjectDTO project);
 
-    Page<ProjectEntity> getProjectPageList(PageParamQuery pageParam);
+    Page<ProjectDTO> getProjectPageList(PageParamQuery pageParam);
+
+    ResponseEntity<byte[]> exportProject(ProjectDependencyParamDTO dependency) throws Exception;
 }
