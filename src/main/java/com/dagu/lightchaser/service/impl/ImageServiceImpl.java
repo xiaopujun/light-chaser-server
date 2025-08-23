@@ -108,4 +108,14 @@ public class ImageServiceImpl extends ServiceImpl<ImageMapper, ImagePO> implemen
         queryWrapper.lambda().in(ImagePO::getUrl, urls);
         return getBaseMapper().selectList(queryWrapper);
     }
+
+    @Override
+    @Transactional
+    public ImagePO createImage(ImagePO imagePO) {
+        if (imagePO == null)
+            return null;
+        save(imagePO);
+        return imagePO;
+    }
+
 }

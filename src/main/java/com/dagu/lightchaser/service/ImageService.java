@@ -41,4 +41,11 @@ public interface ImageService extends IService<ImagePO> {
      * @return 图片列表
      */
     List<ImagePO> getImages(List<String> urls);
+
+    /**
+     * 创建文件
+     *
+     * @param imagePO 文件对象
+     */
+    ImagePO createImage(ImagePO imagePO);
 }

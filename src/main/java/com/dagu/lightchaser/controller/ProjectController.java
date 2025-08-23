@@ -2,13 +2,16 @@ package com.dagu.lightchaser.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dagu.lightchaser.global.ApiResponse;
-import com.dagu.lightchaser.model.dto.ProjectDependencyParamDTO;
 import com.dagu.lightchaser.model.dto.ProjectDTO;
+import com.dagu.lightchaser.model.dto.ProjectDependencyParamDTO;
+import com.dagu.lightchaser.model.dto.ProjectImportParamDTO;
 import com.dagu.lightchaser.model.query.PageParamQuery;
 import com.dagu.lightchaser.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/project")
@@ -59,5 +62,10 @@ public class ProjectController {
     @PostMapping("/exportProject")
     public ResponseEntity<byte[]> exportProject(@RequestBody ProjectDependencyParamDTO dependency) throws Exception {
         return projectService.exportProject(dependency);
+    }
+
+    @PostMapping("/importProject")
+    public ApiResponse<Boolean> importProject(ProjectImportParamDTO importParam) throws IOException {
+        return ApiResponse.success(projectService.importProject(importParam));
     }
 }

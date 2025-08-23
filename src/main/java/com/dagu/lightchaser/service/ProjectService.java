@@ -2,11 +2,14 @@ package com.dagu.lightchaser.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dagu.lightchaser.model.dto.ProjectDTO;
 import com.dagu.lightchaser.model.dto.ProjectDependencyParamDTO;
+import com.dagu.lightchaser.model.dto.ProjectImportParamDTO;
 import com.dagu.lightchaser.model.po.ProjectPO;
 import com.dagu.lightchaser.model.query.PageParamQuery;
-import com.dagu.lightchaser.model.dto.ProjectDTO;
 import org.springframework.http.ResponseEntity;
+
+import java.io.IOException;
 
 public interface ProjectService extends IService<ProjectPO> {
     Boolean updateProject(ProjectDTO project);
@@ -26,4 +29,6 @@ public interface ProjectService extends IService<ProjectPO> {
     Page<ProjectDTO> getProjectPageList(PageParamQuery pageParam);
 
     ResponseEntity<byte[]> exportProject(ProjectDependencyParamDTO dependency) throws Exception;
+
+    Boolean importProject(ProjectImportParamDTO importParam) throws IOException;
 }

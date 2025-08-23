@@ -12,19 +12,16 @@
 package com.dagu.lightchaser.model.dto;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
- * 项目导入/导出以此数据结构为准
+ * @author puyinzhen
+ * 项目导入参数
  */
 @Data
-public class ProjectDependenciesDTO implements Serializable {
-    private Long id;
-    private String name;
-    private String desc;
-    private String version;
-    private String projectJson;
-    private List<ProjectDependencyItemDTO> images; // 项目所使用的图片列表
+public class ProjectImportParamDTO implements Serializable {
+    private Long projectId;
+    private MultipartFile file;
 }

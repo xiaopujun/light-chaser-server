@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.global.GlobalProperties;
 import com.dagu.lightchaser.mapper.ProjectMapper;
-import com.dagu.lightchaser.model.dto.ProjectDTO;
-import com.dagu.lightchaser.model.dto.ProjectDependenciesDTO;
-import com.dagu.lightchaser.model.dto.ProjectDependencyItemDTO;
-import com.dagu.lightchaser.model.dto.ProjectDependencyParamDTO;
+import com.dagu.lightchaser.model.dto.*;
 import com.dagu.lightchaser.model.po.ImagePO;
 import com.dagu.lightchaser.model.po.ProjectPO;
 import com.dagu.lightchaser.model.query.PageParamQuery;
@@ -18,7 +15,11 @@ import com.dagu.lightchaser.service.ImageService;
 import com.dagu.lightchaser.service.ProjectService;
 import com.dagu.lightchaser.util.FileUtil;
 import com.dagu.lightchaser.util.PathUtil;
+import com.dagu.lightchaser.util.ProjectUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,20 +29,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectPO> implements ProjectService {
@@ -213,7 +214,6 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectPO> im
         ProjectDependenciesDTO dependencies = new ProjectDependenciesDTO();
         dependencies.setId(dependency.getId());
         dependencies.setName(dependency.getName());
-        dependencies.setFonts(fontDep);
         dependencies.setImages(imageDep);
         dependencies.setProjectJson(dataJson);
         dependencies.setVersion(globalProperties.getVersion());
@@ -276,6 +276,96 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectPO> im
 
         // 返回响应实体，包含压缩后的字节数组
         return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public Boolean importProject(ProjectImportParamDTO importParam) throws IOException {
+        if (importParam == null)
+            return false;
+
+        //1. 初始化
+        String dataJson = null;
+        ProjectDependenciesDTO dependencies = null;
+        ArrayList<String> imagesUrls = new ArrayList<>();
+        MultipartFile file = importParam.getFile();
+        //2. 存储为临时文件
+        Path tempFile = Files.createTempFile("upload-" + UUID.randomUUID(), ".zip");
+        Files.write(tempFile, file.getBytes());
+
+        try (ZipInputStream filterZis = new ZipInputStream(Files.newInputStream(tempFile));
+             ZipInputStream saveZis = new ZipInputStream(Files.newInputStream(tempFile))) {
+            ZipEntry zipEntry;
+            //3. 首次读取并计算初始化参数
+            while ((zipEntry = filterZis.getNextEntry()) != null) {
+                String entryName = String.join("", File.separator, zipEntry.getName()).replaceAll("\\\\", "/");
+                if (entryName.contains(globalProperties.getImagePath().replaceAll("\\\\", "/")))
+                    imagesUrls.add(entryName.substring(entryName.lastIndexOf("/") + 1));
+                if (entryName.endsWith(".lc")) {
+                    StringBuilder sb = new StringBuilder();
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(new FilterInputStream(filterZis) {
+                                @Override
+                                public void close() {
+                                }
+                            }))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            sb.append(line);
+                        }
+                    }
+                    dataJson = sb.toString();
+                    dependencies = JSON.parseObject(dataJson, ProjectDependenciesDTO.class);
+                }
+                filterZis.closeEntry();
+            }
+
+            //4. 过滤掉系统中已经存在的资源（无需重复上传）
+            if (!imagesUrls.isEmpty()) {
+                List<ImagePO> imagePOList = imageService.getImages(imagesUrls);
+                imagesUrls.removeIf((url) -> imagePOList.stream().anyMatch((po) -> po.getUrl().equals(url)));
+            }
+
+            if (dependencies == null)
+                throw new RuntimeException("未找到依赖文件");
+
+            //5. 第二次读取压缩包内容，将传入文件存储到系统中并记录
+            List<ProjectDependencyItemDTO> imageDepList = dependencies.getImages();
+            while ((zipEntry = saveZis.getNextEntry()) != null) {
+                String entryName = zipEntry.getName();
+                String imageName = imagesUrls.stream().filter(entryName::contains).findFirst().orElse(null);
+                if (StringUtils.isNotEmpty(imageName)) {
+                    Path imageSavePath = Path.of(globalProperties.getImageAbsolutPath(), imageName);
+                    if (!Files.exists(imageSavePath))
+                        Files.createDirectories(imageSavePath.getParent());
+                    Files.copy(saveZis, imageSavePath, StandardCopyOption.REPLACE_EXISTING);
+                    ImagePO imagePO = new ImagePO();
+                    imagePO.setUrl(imageName);
+                    String depFileName = ProjectUtil.getDepFileName(imageDepList, imageName);
+                    if (StringUtils.isNotEmpty(depFileName))
+                        imagePO.setName(depFileName);
+                    else
+                        imagePO.setName(imageName);
+                    imageService.createImage(imagePO);
+                }
+                saveZis.closeEntry();
+            }
+            // 更新dataJson
+            ProjectPO projectPO = new ProjectPO();
+            projectPO.setId(importParam.getProjectId());
+            projectPO.setDataJson(dependencies.getProjectJson());
+            projectMapper.updateById(projectPO);
+        } catch (Exception e) {
+            log.error("导入失败:{}", e.getMessage(), e);
+            throw new RuntimeException("导入失败,失败原因: " + e.getMessage());
+        } finally {
+            try {
+                Files.deleteIfExists(tempFile);
+            } catch (IOException e) {
+                log.warn("临时文件删除失败: {}", tempFile, e);
+            }
+        }
+        return true;
     }
 
 }

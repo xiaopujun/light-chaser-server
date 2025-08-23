@@ -11,7 +11,10 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       connection-timeout: 30000
-
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 
 
@@ -29,7 +32,7 @@ mybatis-plus:
 
 
 light-chaser:
-#  project-resource-path: ./data/resources # 项目资源路径
+  #  project-resource-path: ./data/resources # 项目资源路径
   migration: # 是否自动跑sql脚本
     enable: true
   crypto:
