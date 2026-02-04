@@ -1,5 +1,6 @@
 package com.dagu.lightchaser.service.impl;
 
+import com.dagu.lightchaser.config.CryptoConfig;
 import com.dagu.lightchaser.model.po.CommonDatasourcePO;
 import com.dagu.lightchaser.model.entity.DbExecutorEntity;
 import com.dagu.lightchaser.executor.DataBaseExecuteFactory;
@@ -7,6 +8,8 @@ import com.dagu.lightchaser.global.AppException;
 import com.dagu.lightchaser.service.CommonDatasourceService;
 import com.dagu.lightchaser.service.DbExecutorService;
 import com.dagu.lightchaser.util.Base64Util;
+import com.dagu.lightchaser.util.CryptoUtil;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ public class DbExecutorServiceImpl implements DbExecutorService {
 
     @Autowired
     private CommonDatasourceService commonDatasourceService;
+    @Resource
+    private CryptoConfig cryptoConfig;
 
     @Override
     public Object executeSql(DbExecutorEntity dbExecutorEntity) {
@@ -33,8 +38,9 @@ public class DbExecutorServiceImpl implements DbExecutorService {
         CommonDatasourcePO dataSourcePOCommon = commonDatasourceService.getById(dbExecutorEntity.getId());
         if (dataSourcePOCommon == null)
             throw new AppException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "The data source does not exist");
-        JdbcTemplate jdbcTemplate = DataBaseExecuteFactory.buildDataSource(dataSourcePOCommon);
         try {
+            dataSourcePOCommon.setPassword(CryptoUtil.decryptByAESWithIV2(dataSourcePOCommon.getPassword(), cryptoConfig.getAes().getKey()));
+            JdbcTemplate jdbcTemplate = DataBaseExecuteFactory.buildDataSource(dataSourcePOCommon);
             List<Map<String, Object>> res = jdbcTemplate.queryForList(sql);
             if (res.size() == 1)
                 return res.get(0);

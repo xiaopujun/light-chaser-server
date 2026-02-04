@@ -289,18 +289,5 @@ public class CryptoUtil {
             return decryptByAES(encryptedData, keyString);
         }
     }
-    
-    /**
-     * 测试加解密功能
-     * 
-     * @param args 命令行参数
-     */
-    public static void main(String[] args) throws Exception {
 
-        {
-            String root = encryptByAES("root", "YmVVaTJUNGdvV3huQnZXZzlEUE9kdnBaaS9ZcTZ0UzZtWXl2TWVXTzQ0Qz0=");
-
-            System.out.println(decryptByAESWithIV2(root, "YmVVaTJUNGdvV3huQnZXZzlEUE9kdnBaaS9ZcTZ0UzZtWXl2TWVXTzQ0Qz0="));
-        }
-    }
 }
